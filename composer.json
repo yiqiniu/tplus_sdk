@@ -1,5 +1,5 @@
 {
-    "name": "yqnjianbo/chanjetsdk",
+    "name": "yqn/chanjet_client_sdk",
     "description": "chanjet client sdk",
     "type": "library",
     "version": "1.0.1",

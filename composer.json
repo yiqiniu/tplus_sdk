@@ -1,0 +1,24 @@
+{
+    "name": "yqnjianbo/chanjetsdk",
+    "description": "chanjet client sdk",
+    "type": "library",
+    "version": "1.0.1",
+    "authors": [
+        {
+            "name": "gjianbo",
+            "email": "gjianbo@qq.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+    	"php":">=7.0",
+        "firebase/php-jwt": "^5.0"
+
+    },
+    "autoload": {
+        "psr-4": {
+            "yqn\\chanjet\\": "src/"
+        }
+    }
+
+}

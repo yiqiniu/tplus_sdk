@@ -29,9 +29,9 @@ class ChanjetOAuth
     private $_privekey = '';
     //header
     protected $_header = null;
-
+    //缓存有效期
     private $_token_timeout=3600*5;
-
+    //已生成有签名
     private $_sign = '';
 
     //配置文件
@@ -97,24 +97,30 @@ class ChanjetOAuth
      */
     public function getSign()
     {
-        $appdata = [
-            'appkey' => $this->_config['appKey'],
-            'orgid' => $this->_config['orgid'],
-            'appsecret' => $this->_config['appSecret']
-        ];
-        $md5key = md5(json_encode($appdata));
-        $signData = [];
-        if (!empty($this->_access_token)) {
-            $signData['access_token'] = $this->_access_token;
+       //获取已缓存的http请求的签名
+        $this->_sign =Tools::getCache('http_sign');
+        //如果token无效或签名无效 或
+        if(empty($this->_sign)){
+
+            $appdata = [
+                'appkey' => $this->_config['appKey'],
+                'orgid' => $this->_config['orgid'],
+                'appsecret' => $this->_config['appSecret']
+            ];
+            $md5key = md5(json_encode($appdata));
+            $signData = [];
+            if (!empty($this->_access_token)) {
+                $signData['access_token'] = $this->_access_token;
+            }
+            $signData['sub'] = 'e-commerce';
+            $signData['datas'] = $md5key;
+            $signData['exp'] = time() + $this->_token_timeout;
+            $sign = JWT::encode($signData, $this->_privekey, 'RS256');
+
+            $auth = ['appKey' => $this->_config['appKey'], 'authInfo' => $sign, 'orgId' => $this->_config['orgid']];
+            $this->_sign = base64_encode(json_encode($auth));
+            Tools::setCache('http_sign',$this->_sign,$this->_token_timeout);
         }
-        $signData['sub'] = 'e-commerce';
-        $signData['datas'] = $md5key;
-        $signData['exp'] = time() + $this->_token_timeout;
-        $sign = JWT::encode($signData, $this->_privekey, 'RS256');
-
-        $auth = ['appKey' => $this->_config['appKey'], 'authInfo' => $sign, 'orgId' => $this->_config['orgid']];
-        $this->_sign = base64_encode(json_encode($auth));
-
         // 设置请求的头部信息
         $this->_header = [
             "Content-type:application/x-www-form-urlencoded;charset=utf-8",
@@ -143,10 +149,14 @@ class ChanjetOAuth
      * 发送get请求
      * @param $url  string          请求的url地址
      * @param $data array/string    请求的数据
+     * @param $fullurl bool true  完整的url false 整合与serverurl进行整合
      * @return bool|string
      */
-    public function httpGet($url, $data)
+    public function httpGet($url, $data,$fullurl=false)
     {
+        if(!$fullurl){
+            $url=$this->geturl($url);
+        }
         $this->getSign();
         return $this->httpDone(Tools::get($url, $data, ['headers' => $this->_header]));
     }
@@ -193,6 +203,7 @@ class ChanjetOAuth
         if($jsondata!==false){
             Tools::setCache('access_token',$jsondata['access_token'],$this->_token_timeout);
             $this->_access_token = $jsondata['access_token'];
+            Tools::delCache('http_sign');
         }
         return $jsondata;
     }

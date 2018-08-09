@@ -1,5 +1,5 @@
 {
-    "name": "yqn/chanjet_client_sdk",
+    "name": "yqn/chanjet_sdk",
     "description": "chanjet client sdk",
     "type": "library",
     "version": "1.0.1",
@@ -9,7 +9,7 @@
             "email": "gjianbo@qq.com"
         }
     ],
-    "minimum-stability": "dev",
+   // "minimum-stability": "dev",
     "require": {
     	"php":">=7.0",
         "firebase/php-jwt": "^5.0"

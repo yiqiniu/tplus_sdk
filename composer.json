@@ -9,6 +9,7 @@
             "email": "gjianbo@qq.com"
         }
     ],
+    "minimum-stability": "beta",
     "require": {
     	"php":">=7.0",
         "firebase/php-jwt": "^5.0"

@@ -21,9 +21,7 @@ return [
 
     ],
     // 调试状态,自动记录日志
-
     'api_debug'=>true,
+    //默认缓存和日志保存的位置
     'runtime'=>dirname(__DIR__) . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR,
-
-
 ];

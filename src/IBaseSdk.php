@@ -8,9 +8,6 @@
 
 namespace yqn\chanjet;
 
-
-
-
 use yqn\chanjet\helper\Tools;
 
 abstract class IBaseSdk
@@ -23,14 +20,11 @@ abstract class IBaseSdk
     protected $httpPost=null;
     //使用post 进行数据操作, baseAuth::httpGet的别名函数
     protected $httpGet=null;
-
     // 操作名
     protected  $opName='';
     //子类的类名 若符合规则,可自动生成操作名
-
     protected  $clsName='';
-
-    //操作菜单
+  //操作菜单
     protected  $_opAction=[
         // 查询
         'query'=>'Query',
@@ -41,6 +35,19 @@ abstract class IBaseSdk
         // 删除
         'delete'=>'Delete'
     ];
+    //查询时返回的字段
+    protected $selectfield='';
+    /**
+     * 参数查询前缀
+     * @var array
+     */
+    protected $param_prefix=[
+        'query'=>'param',
+        'create'=>'dto',
+        'update'=>'dto',
+        'delete'=>'dto',
+    ];
+
     /**
      * ChanjetSdk constructor.
      * @param array  配置参数
@@ -93,7 +100,8 @@ abstract class IBaseSdk
                 'querydata'=>$data,
                 'return'=>$retdata
             ];
-            Tools::writeLogger($this->logfile,$data);
+            //访问日志每次清空
+            Tools::writeLogger($this->logfile,$data,false);
         }
 
     }
@@ -146,18 +154,21 @@ abstract class IBaseSdk
      * @return mixed
      */
 
-    public function query($where=[],$perfix='param'){
+    public function query($where=[],$perfix=''){
         if(is_string($where)){
             $perfix=$where;
             $where=[];
         }
-        $perfix.='=';
-        if(empty($where)){
-            $perfix.='{}';
-        }else{
-            $perfix.=json_encode($where);
+        if(empty($perfix) && isset($this->param_prefix['query'])){
+            $perfix = $this->param_prefix['query'];
         }
-        return $this->post_query($perfix);
+        //如果指定了返回字段,查询是按返回的字段为主
+        if(!isset($where['SelectFields']) && !empty($this->selectfield)){
+            $where['SelectFields']=$this->selectfield;
+        }
+        //生成要发送的数据
+        $senddata=($perfix.'=').(empty($where)?'{}':json_encode($where));
+        return $this->post_query($senddata);
     }
     /**
      * 添加数据接口,以完成默认操作,必须在子类调用,外部不能直接访问
@@ -165,12 +176,15 @@ abstract class IBaseSdk
      * @param string $perfix              操作的前缀如: param ,dto
      * @return mixed
      */
-    protected function create($data=[],$perfix='dto'){
+    protected function create($data=[],$perfix=''){
         if(empty($data)){
             return false;
         }
-        $perfix.='='.json_encode($data);
-        return $this->post_create($perfix);
+        if(empty($perfix) && isset($this->param_prefix['query'])){
+            $perfix = $this->param_prefix['query'];
+        }
+        $senddata = ($perfix.'=').json_encode($data);
+        return $this->post_create($senddata);
     }
 
     /**
@@ -179,29 +193,34 @@ abstract class IBaseSdk
      * @param string $perfix              操作的前缀如: param ,dto
      * @return mixed
      */
-    protected function update($data=[],$perfix='dto')
+    protected function update($data=[],$perfix='')
     {
         if(empty($data)){
             return false;
         }
-        $perfix.='='.json_encode($data);
-        return $this->post_update($perfix);
+        if(empty($perfix) && isset($this->param_prefix['query'])){
+            $perfix = $this->param_prefix['query'];
+        }
+        $senddata = ($perfix.'=').json_encode($data);
+        return $this->post_update($senddata);
     }
 
     /**
      *
      * 删除接口
-     * @param array $data                 要修改的数据
+     * @param array $where                要删除数据
      * @param string $perfix              操作的前缀如: param ,dto
      * @return mixed
      */
-    protected function delete($where=[],$perfix='dto'){
-        if(empty($data)){
+    protected function delete($where=[],$perfix=''){
+        if(empty($where)){
             return false;
         }
-        $perfix.='='.json_encode($data);
-
-        return $this->post_delete($perfix);
+        if(empty($perfix) && isset($this->param_prefix['query'])){
+            $perfix = $this->param_prefix['query'];
+        }
+        $senddata = $perfix.'='.json_encode($where);
+        return $this->post_delete($senddata);
     }
 
 

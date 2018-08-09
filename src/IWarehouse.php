@@ -13,8 +13,8 @@ class IWarehouse extends IBaseSdk
 {
 
     // url中操作名称
-  //  protected  $opName='warehouse';
 
+    protected  $selectfield='ID,Code,Name,Address,Memo';
 
 
 }

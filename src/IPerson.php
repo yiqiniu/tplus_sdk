@@ -17,7 +17,13 @@ namespace yqn\chanjet;
 class IPerson extends IBaseSdk
 {
 
-
+    protected $param_prefix=[
+        'query'=>'dto',
+        'create'=>'dto',
+        'update'=>'dto',
+        'delete'=>'dto',
+    ];
+    protected $selectfield='ID,Code,Name,Shorthand,MobilePhoneNo';
     //查询模拟
     public function demo(){
 

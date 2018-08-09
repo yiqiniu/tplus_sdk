@@ -213,48 +213,55 @@ class Tools
      */
     protected static function doRequest($method, $url, $options = [])
     {
-        $curl = curl_init();
-        // GET参数设置
-        if (!empty($options['query'])) {
-            $url .= (stripos($url, '?') !== false ? '&' : '?') . http_build_query($options['query']);
-        }
-        // CURL头信息设置
-        if (!empty($options['headers'])) {
-             curl_setopt($curl, CURLOPT_HTTPHEADER, $options['headers']);
+        try{
+            $curl = curl_init();
+            // GET参数设置
+            if (!empty($options['query'])) {
+                $url .= (stripos($url, '?') !== false ? '&' : '?') . http_build_query($options['query']);
+            }
+            // CURL头信息设置
+            if (!empty($options['headers'])) {
+                 curl_setopt($curl, CURLOPT_HTTPHEADER, $options['headers']);
 
-        }
-        // POST数据设置
-        if (strtolower($method) === 'post') {
-            curl_setopt($curl, CURLOPT_POST, true);
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $options['data']);
-        }
-        // 证书文件设置
-        if (!empty($options['ssl_cer'])) {
-            if (file_exists($options['ssl_cer'])) {
-                curl_setopt($curl, CURLOPT_SSLCERTTYPE, 'PEM');
-                curl_setopt($curl, CURLOPT_SSLCERT, $options['ssl_cer']);
-            } else {
-                throw new InvalidArgumentException("Certificate files that do not exist. --- [ssl_cer]");
             }
-        }
-        // 证书文件设置
-        if (!empty($options['ssl_key'])) {
-            if (file_exists($options['ssl_key'])) {
-                curl_setopt($curl, CURLOPT_SSLKEYTYPE, 'PEM');
-                curl_setopt($curl, CURLOPT_SSLKEY, $options['ssl_key']);
-            } else {
-                throw new InvalidArgumentException("Certificate files that do not exist. --- [ssl_key]");
+            // POST数据设置
+            if (strtolower($method) === 'post') {
+                curl_setopt($curl, CURLOPT_POST, true);
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $options['data']);
             }
+            // 证书文件设置
+            if (!empty($options['ssl_cer'])) {
+                if (file_exists($options['ssl_cer'])) {
+                    curl_setopt($curl, CURLOPT_SSLCERTTYPE, 'PEM');
+                    curl_setopt($curl, CURLOPT_SSLCERT, $options['ssl_cer']);
+                } else {
+                    throw new InvalidArgumentException("Certificate files that do not exist. --- [ssl_cer]");
+                }
+            }
+            // 证书文件设置
+            if (!empty($options['ssl_key'])) {
+                if (file_exists($options['ssl_key'])) {
+                    curl_setopt($curl, CURLOPT_SSLKEYTYPE, 'PEM');
+                    curl_setopt($curl, CURLOPT_SSLKEY, $options['ssl_key']);
+                } else {
+                    throw new InvalidArgumentException("Certificate files that do not exist. --- [ssl_key]");
+                }
+            }
+            curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_TIMEOUT, 60);
+            curl_setopt($curl, CURLOPT_HEADER, false);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+            list($content, $status) = [curl_exec($curl), curl_getinfo($curl), curl_close($curl)];
+            //return (intval($status["http_code"]) === 200) ? $content : false;
+            return (empty($content)) ? false:$content;
         }
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 60);
-        curl_setopt($curl, CURLOPT_HEADER, false);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        list($content, $status) = [curl_exec($curl), curl_getinfo($curl), curl_close($curl)];
-        //return (intval($status["http_code"]) === 200) ? $content : false;
-        return (empty($content)) ? false:$content;
+        catch (\Exception $e){
+            print_r($e);
+            return false;
+           // exit();
+        }
     }
 
     /**
@@ -324,7 +331,7 @@ class Tools
      * @return bool   true 保存成功,  false 保存失败
      */
 
-    public static function writeLogger($filename,$strdata){
+    public static function writeLogger($filename,$strdata,$append=true){
         try{
             $dirname=dirname($filename);
             file_exists($dirname) || mkdir($dirname, 0755, true);
@@ -333,7 +340,11 @@ class Tools
                 $strdata = print_r($strdata,true);
             }
             $str = "[" . date("Y-m-d H:i:s") . "]" . $strdata . "\r\n";
-            $rs = fopen($filename, "a+");
+            if($append)
+                $rs = fopen($filename, "a+");
+            else{
+                $rs = fopen($filename, "w");
+            }
             fwrite($rs, $str);
             fclose($rs);
             return true;

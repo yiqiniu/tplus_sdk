@@ -7,6 +7,7 @@
  */
 
 use yqn\chanjet\IBaseAuth;
+use yqn\chanjet\IDepartment;
 use yqn\chanjet\IPartner;
 use yqn\chanjet\IPerson;
 use yqn\chanjet\IWarehouse;
@@ -22,30 +23,43 @@ $ibaseauth = IBaseAuth::getInstance($config);
 
 // 进行自动登录
 if($ibaseauth->autologin()){
+    //person($ibaseauth);
+    partner($ibaseauth);
     //warehouse($ibaseauth);
-    person($ibaseauth);
+    //department($ibaseauth);
+
 }
 
-
-// 员工表
-function person($ibaseauth){
-    $Person = new IPerson($ibaseauth);
-    $data =$Person->query('dto');
+/**
+ * @param $ibaseauth
+ */
+function department($ibaseauth){
+    $department = new IDepartment($ibaseauth);
+    $data =$department->query();
     var_dump($data);
 }
 
-//$test = $chanjet->login();
-//var_dump($test);
-/*$demo = $chanjet->demo();
-var_dump($demo);*/
+
+//合作伙伴
+function partner($ibaseauth){
+    $partner = new IPartner($ibaseauth);
+    $data =$partner->query(['Code'=>'010100010']);
+    var_dump($data);
+}
+// 员工表
+function person($ibaseauth){
+    $Person = new IPerson($ibaseauth);
+    $data =$Person->query();
+    var_dump($data);
+}
+
 
 //仓库操作
 function warehouse($ibaseauth){
     // 库存表
 
     $warehouse = new  IWarehouse($ibaseauth);
-
-    $data = $warehouse->query(['Code'=>'01']);
-
+    //$data = $warehouse->query(['Code'=>'01']);
+    $data = $warehouse->query();
     var_dump($data);
 }

@@ -11,9 +11,10 @@ namespace yqn\chanjet;
 
 use Firebase\JWT\JWT;
 use InvalidArgumentException;
+use yqn\chanjet\helper\Tools;
 
 
-class ChanjetOAuth
+class IBaseAuth
 {
 
     //创建静态私有的变量保存该类对象
@@ -31,8 +32,15 @@ class ChanjetOAuth
     protected $_header = null;
     //缓存有效期
     private $_token_timeout=3600*5;
+
     //已生成有签名
     private $_sign = '';
+    //runtime路径
+    private $_runtime_path='';
+    //是否开始调试
+    private $debug=false;
+
+
 
     //配置文件
     private $_config = [
@@ -50,7 +58,7 @@ class ChanjetOAuth
      */
     public function __construct($config)
     {
-        $this->_config = array_merge($this->_config, $config);
+        $this->_config = array_merge($this->_config, $config['api']);
         if (empty($this->_config['serverUrl'])) {
             throw new InvalidArgumentException("Missing Config -- [serverUrl]");
         }
@@ -68,13 +76,37 @@ class ChanjetOAuth
             throw new InvalidArgumentException("privceKey File not Exist");
         }
         $this->_privekey = file_get_contents($this->_config['appPrivateKey']);
+        //运行保存的路径
+        $this->_runtime_path='../'.dirname(__DIR__) . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR;
 
-        //设置缓存的路径
-        if(empty($this->_config['cachePath'])){
-            Tools::$cache_path=$this->_config['cachePath'];
+
+        //是否自动记录日志
+        if(!empty($config['api_debug'])){
+            $this->debug=$config['api_debug'];
         }
+        //设置缓存的路径
+        if(!empty($config['runtime'])){
+            $this->_runtime_path = $config['runtime'];
+        }
+        $this->initialize();
+
+    }
+
+    /**
+     * 初始化缓存变量
+     * @return mixed|null|string
+     */
+    private function initialize()
+    {
+
+
+        // 设置日志的路径
+        Tools::$log_path=$this->_runtime_path.'logs'.DIRECTORY_SEPARATOR;
+        // 设置缓存的路径
+        Tools::$cache_path=$this->_runtime_path.'cache'.DIRECTORY_SEPARATOR;
+
         //判断是否登录过
-        if($token=Tools::getCache('access_token')){
+        if($token=Tools::getCache('access_token_'.date('Y-m-d'))){
             $this->_access_token = $token;
         }
     }
@@ -83,7 +115,7 @@ class ChanjetOAuth
     /**
      *
      * @param $config
-     * @return null|ChanjetOAuth
+     * @return null|IBaseAuth
      */
     static public function  getInstance($config){
         if (!self::$instance instanceof self) {
@@ -98,7 +130,7 @@ class ChanjetOAuth
     public function getSign()
     {
        //获取已缓存的http请求的签名
-        $this->_sign =Tools::getCache('http_sign');
+        $this->_sign =Tools::getCache('http_sign_'.date('Y-m-d'));
         //如果token无效或签名无效 或
         if(empty($this->_sign)){
 
@@ -119,7 +151,9 @@ class ChanjetOAuth
 
             $auth = ['appKey' => $this->_config['appKey'], 'authInfo' => $sign, 'orgId' => $this->_config['orgid']];
             $this->_sign = base64_encode(json_encode($auth));
-            Tools::setCache('http_sign',$this->_sign,$this->_token_timeout);
+            if (!empty($this->_access_token)) {
+                Tools::setCache('http_sign_' . date('Y-m-d'), $this->_sign, $this->_token_timeout);
+            }
         }
         // 设置请求的头部信息
         $this->_header = [
@@ -141,6 +175,7 @@ class ChanjetOAuth
         if(!$fullurl){
             $url=$this->geturl($url);
         }
+        // 获取登录的签名
         $this->getSign();
         return $this->httpDone(Tools::post($url, $data, ['headers' => $this->_header]));
     }
@@ -201,9 +236,9 @@ class ChanjetOAuth
         $jsondata =  $this->httpPost($url,["_args" => json_encode($postdata)]);
         //检查是否登录成功
         if($jsondata!==false){
-            Tools::setCache('access_token',$jsondata['access_token'],$this->_token_timeout);
+            Tools::setCache('access_token_'.date('Y-m-d'),$jsondata['access_token'],$this->_token_timeout);
             $this->_access_token = $jsondata['access_token'];
-            Tools::delCache('http_sign');
+            Tools::delCache('http_sign_'.date('Y-m-d'));
         }
         return $jsondata;
     }
@@ -217,6 +252,37 @@ class ChanjetOAuth
     }
 
     /**
+     * 自动检测是否登录,未登录时进行登录
+     * @param string $username      用户名
+     * @param string $passwd        密码
+     * @param string $accNum        帐套号
+     * @param $force bool           强制重新登录,true 强制  false  不强制
+     * @return bool 成功返回true,失败返回false
+     */
+    public function autologin($username='',$passwd='',$accNum='',$force=false){
+        if(is_bool($username)){
+            $force=$username;
+            $username='';
+        }
+
+        if($force){
+            $this->_access_token='';
+            Tools::delCache('access_token_'.date('Y-m-d'));
+            Tools::delCache('http_sign_'.date('Y-m-d'));
+        }
+        if(empty($this->_access_token)){
+            try {
+
+                return $this->login($username, $passwd, $accNum);
+            } catch (\Exception $e) {
+                print_r($e);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * 生成完整的url地址
      * @param string $url
      * @return bool|string
@@ -227,13 +293,33 @@ class ChanjetOAuth
         }
         if(!empty($url)){
            $f=substr($url,0,1);
-           if($f=='/' || $f='\\'){
+           if($f=='/' || $f=='\\'){
                $url=substr($url,1);
            }
         }
         return $this->_config['serverUrl'].$url;
     }
 
+    /**
+     * 获取成员变量的值
+     * @param $name
+     * @return bool/value  成功返回内容 失败返回false
+     */
+    public function __get($name){
+        if (isset($this->$name)) {                               //判断变量是否被声明
+            return $this->$name;
+        }
+        return false;
+    }
 
 
- }
+    /**
+     * 设置成员变量的
+     * @param $name   变量名称
+     * @param $value   变量值
+     */
+    public function __set($name, $value){
+        $this->$name=$value;
+    }
+
+}

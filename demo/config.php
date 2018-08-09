@@ -8,12 +8,22 @@
 
 return [
 
-    'serverUrl'=>'https://t.chanjet.com/tplus/api/v2/',
+    // T+ 接口信息
+    'api'=>[
+        //服务器的地址
+        'serverUrl'=>'https://t.chanjet.com/tplus/api/v2/',
+        "appKey" => '183573b3-8ec8-4404-90de-eb6e1ee1954e',
+        "appSecret" => 'xdgzs9',
+        // 私钥路径
+        'appPrivateKey' => dirname(__FILE__).'/cert/cjet_pri.pem',
+        // 企业编号
+        'orgid' => '90010503265',
 
-    "appKey" => '183573b3-8ec8-4404-90de-eb6e1ee1954e',
-    "appSecret" => 'xdgzs9',
-    'appPrivateKey' => dirname(__FILE__).'/cert/cjet_pri.pem',
-    'orgid' => '90010503265',
-    //当前目录的Cache目录下
-    'cachePath'=>dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Cache' . DIRECTORY_SEPARATOR
+    ],
+    // 调试状态,自动记录日志
+
+    'api_debug'=>true,
+    'runtime'=>dirname(__DIR__) . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR,
+
+
 ];

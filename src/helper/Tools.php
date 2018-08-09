@@ -12,7 +12,7 @@
 // | github开源项目：https://github.com/zoujingli/WeChatDeveloper
 // +----------------------------------------------------------------------
 
-namespace yqn\chanjet;
+namespace yqn\chanjet\helper;
 
 
 /**
@@ -27,6 +27,8 @@ class Tools
      * @var null
      */
     public static $cache_path = null;
+    //默认日志保存的文件路径
+    public static $log_path=null;
 
 
     /**
@@ -308,10 +310,38 @@ class Tools
     private static function getCacheName($name)
     {
         if (empty(self::$cache_path)) {
-            self::$cache_path = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Cache' . DIRECTORY_SEPARATOR;
+            self::$cache_path = dirname(__DIR__) . DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR;
         }
         self::$cache_path = rtrim(self::$cache_path, '/\\') . DIRECTORY_SEPARATOR;
         file_exists(self::$cache_path) || mkdir(self::$cache_path, 0755, true);
         return self::$cache_path . $name;
+    }
+
+    /**
+     * 把内容写入到日志中
+     * @param $filename string 要写入文件名
+     * @param $strdata string 要写入的数据 数组或对象与print_r转换为字符串
+     * @return bool   true 保存成功,  false 保存失败
+     */
+
+    public static function writeLogger($filename,$strdata){
+        try{
+            $dirname=dirname($filename);
+            file_exists($dirname) || mkdir($dirname, 0755, true);
+
+            if(!is_string($strdata)){
+                $strdata = print_r($strdata,true);
+            }
+            $str = "[" . date("Y-m-d H:i:s") . "]" . $strdata . "\r\n";
+            $rs = fopen($filename, "a+");
+            fwrite($rs, $str);
+            fclose($rs);
+            return true;
+        }
+        catch (\Exception $e){
+
+            return false;
+        }
+
     }
 }

@@ -2,34 +2,21 @@
 /**
  * Created by PhpStorm.
  * User: gjianbo
- * Date: 2018/8/1
- * Time: 10:06
+ * Date: 2018/8/8
+ * Time: 10:39
  */
 
 namespace yqn\chanjet;
 
 
-
-
-class ChanjetSdk
+/**
+ * 员工信息
+ * Class IPerson
+ * @package yqn\chanjet
+ */
+class IPerson extends IBaseSdk
 {
 
-
-    protected $_oauth=null;
-    /**
-     * ChanjetSdk constructor.
-     * @param array  配置参数
-     */
-    public function __construct($_config)
-    {
-        $this->_oauth = ChanjetOAuth::getInstance($_config);
-    }
-
-    //用户登录
-    public function login($user='',$pass='',$accNum=''){
-
-        return $this->_oauth->login($user,$pass,$accNum);
-    }
 
     //查询模拟
     public function demo(){
@@ -54,6 +41,10 @@ class ChanjetSdk
         }
 
         $retdata = $this->_oauth->httpPost($url,$datastr);
+
+        $this->writelog($retdata);
         var_dump($retdata);
     }
+
+
 }

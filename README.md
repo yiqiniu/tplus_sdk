@@ -8,11 +8,27 @@ T+进销存接口封装
 
 
 #### 安装教程
+    
+    配置compser.json
+    
+    
+    包含开发包
+    composer require "yqn/chanjet_sdk":"dev-master"
 
-1. xxxx
-2. xxxx
-3. xxxx
+    
+    //指定使用的url
+    {
+      "repositories": [{
+        "type": "composer",
+        "url": "http://git.hnwd.cn"
+      }]
+    }
 
+    // 关闭https
+     "config": {
+            "preferred-install": "dist",
+            "secure-http": false
+      }
 #### 使用说明
 
 1. xxxx

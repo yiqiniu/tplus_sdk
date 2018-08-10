@@ -12,12 +12,12 @@ return [
     'api'=>[
         //服务器的地址
         'serverUrl'=>'https://t.chanjet.com/tplus/api/v2/',
-        "appKey" => '183573b3-8ec8-4404-90de-eb6e1ee1954e',
-        "appSecret" => 'xdgzs9',
+        "appKey" => '',
+        "appSecret" => '',
         // 私钥路径
-        'appPrivateKey' => dirname(__FILE__).'/cert/cjet_pri.pem',
+        'appPrivateKey' => '',
         // 企业编号
-        'orgid' => '90010503265',
+        'orgid' => '',
 
     ],
     // 调试状态,自动记录日志

@@ -8,10 +8,12 @@
 
 namespace yqn\chanjet;
 
-use yqn\chanjet\helper\Tools;
+use yqn\helper\Tools;
 
 abstract class IBaseSdk
 {
+
+
     protected $_oauth=null;
 
     //日志文件名前缀
@@ -70,6 +72,7 @@ abstract class IBaseSdk
         //调用其他初始化操作
         $this->initiaize();
     }
+
 
     /**
      * 调用其他的初始化构造函数

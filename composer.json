@@ -2,7 +2,7 @@
     "name": "yqn/chanjet_sdk",
     "description": "chanjet client sdk",
     "type": "library",
-    "version": "1.0.2",
+    "version": "1.0.5",
     "authors": [
         {
             "name": "gjianbo",
@@ -18,8 +18,12 @@
     },
     "autoload": {
         "psr-4": {
-            "yqn\\chanjet\\": "src/"
-        }
+            "yqn\\chanjet\\": "src/library/",
+            "yqn\\helper\\": "src/helper/"
+        },
+        "files": [
+            "src/helper.php"
+        ]
     }
 
 }

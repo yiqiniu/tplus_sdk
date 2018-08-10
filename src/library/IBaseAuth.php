@@ -11,7 +11,7 @@ namespace yqn\chanjet;
 
 use Firebase\JWT\JWT;
 use InvalidArgumentException;
-use yqn\chanjet\helper\Tools;
+use yqn\helper\Tools;
 
 
 class IBaseAuth

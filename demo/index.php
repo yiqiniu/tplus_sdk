@@ -6,7 +6,6 @@
  * Time: 10:06
  */
 
-use yqn\chanjet\IBaseAuth;
 use yqn\chanjet\IDepartment;
 use yqn\chanjet\IPartner;
 use yqn\chanjet\IPerson;
@@ -15,26 +14,31 @@ use yqn\chanjet\IWarehouse;
 include "autoload.php";
 
 // 加载配置文件
-$config = include 'config.php';
+$config = include 'config.demo.php';
 
 
 //获取认证的信息
-$ibaseauth = IBaseAuth::getInstance($config);
+//$ibaseauth = IBaseAuth::getInstance($config);
+
+$ibaseauth = tplus_baseAuth($config);
 
 // 进行自动登录
 if($ibaseauth->autologin()){
     //person($ibaseauth);
-    partner($ibaseauth);
-    //warehouse($ibaseauth);
-    //department($ibaseauth);
+    //partner($ibaseauth);
+    warehouse($ibaseauth);
+    department($ibaseauth);
 
 }
 
 /**
  * @param $ibaseauth
+ * @throws Exception
  */
 function department($ibaseauth){
-    $department = new IDepartment($ibaseauth);
+
+    $department =tplus_load('department');
+    //$department = new IDepartment($ibaseauth);
     $data =$department->query();
     var_dump($data);
 }
@@ -42,13 +46,14 @@ function department($ibaseauth){
 
 //合作伙伴
 function partner($ibaseauth){
-    $partner = new IPartner($ibaseauth);
+    $partner =tplus_load('partner');
+    //$partner = new IPartner($ibaseauth);
     $data =$partner->query(['Code'=>'010100010']);
     var_dump($data);
 }
 // 员工表
 function person($ibaseauth){
-    $Person = new IPerson($ibaseauth);
+    $Person = tplus_load('person');
     $data =$Person->query();
     var_dump($data);
 }
@@ -57,8 +62,7 @@ function person($ibaseauth){
 //仓库操作
 function warehouse($ibaseauth){
     // 库存表
-
-    $warehouse = new  IWarehouse($ibaseauth);
+    $warehouse = tplus_load('warehouse');
     //$data = $warehouse->query(['Code'=>'01']);
     $data = $warehouse->query();
     var_dump($data);

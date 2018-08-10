@@ -20,4 +20,5 @@ class IDepartment extends IBaseSdk
     ];
     protected $selectfield='ID,Code,Name';
 
+
 }

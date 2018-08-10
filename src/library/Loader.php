@@ -18,14 +18,13 @@ class Loader
      */
     protected static $instance = [];
 
-    /**
-     * @var array 类名映射
-     */
-    protected static $map = [];
-
+    // 当前库的全局命名空间
     protected static $namespace = 'yqn\\chanjet';
 
+    // 基础认证类
     protected static $baseauth=null;
+
+    // 接口配置的信息
     public static $config=null;
 
 
@@ -37,8 +36,7 @@ class Loader
         if($config!==null){
             self::$config=$config;
         }
-        self::$baseauth=IBaseAuth::getInstance(self::$config);
-        return self::$baseauth;
+        return self::$baseauth = IBaseAuth::getInstance(self::$config);
     }
 
     /**
@@ -54,24 +52,24 @@ class Loader
             return self::$instance[$uid];
         }
 
-        //
+        //判断是否指定认证基类
+
         if(!empty($baseauth)){
             self::$baseauth=$baseauth;
         }
         if (empty(self::$baseauth)){
             if(empty(self::$config)) {
-                throw new \Exception('Please first call baseAuth:');
+                throw new \Exception('Please first call baseAuth function ');
             }
             self::$baseauth=IBaseAuth::getInstance(self::$config);
         }
-
-
+        //解析类名
         $class = self::parseClass($name);
 
         if (class_exists($class)) {
             $model = new $class(self::$baseauth);
         } else {
-            throw new \Exception('class not exists:' . $class);
+            throw new \Exception('class not exists' . $class);
         }
 
         return self::$instance[$uid] = $model;

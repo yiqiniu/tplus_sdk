@@ -33,7 +33,6 @@ if($ibaseauth->autologin()){
 
 /**
  * @param $ibaseauth
- * @throws Exception
  */
 function department($ibaseauth){
 

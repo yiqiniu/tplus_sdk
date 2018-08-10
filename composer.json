@@ -1,6 +1,6 @@
 {
     "name": "yqn/chanjet_sdk",
-    "description": "chanjet client sdk",
+    "description": "yiqiniu chanjet t+ client sdk",
     "type": "library",
     "version": "1.0.5",
     "authors": [
@@ -9,12 +9,11 @@
             "email": "gjianbo@qq.com"
         }
     ],
-    "minimum-stability": "RC",
+    "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
     	"php":">=7.0",
         "firebase/php-jwt": "^5.0"
-
     },
     "autoload": {
         "psr-4": {

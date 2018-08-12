@@ -6,7 +6,7 @@
  * Time: 10:06
  */
 
-namespace yqn\chanjet;
+namespace yqn\tplus;
 
 use yqn\helper\Tools;
 

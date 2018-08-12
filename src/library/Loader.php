@@ -6,10 +6,7 @@
  * Time: 13:35
  */
 
-namespace yqn\chanjet;
-
-
-use yqn\chanjet\exception\ClassNotFoundException;
+namespace yqn\tplus;
 
 class Loader
 {
@@ -19,7 +16,7 @@ class Loader
     protected static $instance = [];
 
     // 当前库的全局命名空间
-    protected static $namespace = 'yqn\\chanjet';
+    protected static $namespace = 'yqn\\tplus';
 
     // 基础认证类
     protected static $baseauth=null;

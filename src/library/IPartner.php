@@ -6,7 +6,7 @@
  * Time: 17:26
  */
 
-namespace yqn\chanjet;
+namespace yqn\tplus;
 
 
 /**

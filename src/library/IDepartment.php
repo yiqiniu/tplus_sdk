@@ -6,7 +6,7 @@
  * Time: 13:50
  */
 
-namespace yqn\chanjet;
+namespace yqn\tplus;
 
 
 class IDepartment extends IBaseSdk

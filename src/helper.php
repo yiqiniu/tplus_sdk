@@ -6,14 +6,14 @@
  * Time: 11:09
  */
 
-use yqn\chanjet\Loader  as chanjetLoader;
+use yqn\tplus\Loader  as tplusLoader;
 
 /**
  *  设置接口要使用的信息,参考实例说明
  * @param $config
  */
 function tplus_config($config){
-    chanjetLoader::$config=$config;
+    tplusLoader::$config=$config;
 }
 /**
  * 获取基础认证的类
@@ -21,7 +21,7 @@ function tplus_config($config){
  * @return object        返回基础认证的对象
  */
 function tplus_baseAuth($config=null){
-    return chanjetLoader::baseAuth($config);
+    return tplusLoader::baseAuth($config);
 }
 
 /**
@@ -32,7 +32,7 @@ function tplus_baseAuth($config=null){
  */
 function tplus_load($name,$baseauth=null){
     try{
-        return chanjetLoader::model($name,$baseauth);
+        return tplusLoader::model($name,$baseauth);
     }
     catch (\Exception $e){
         var_dump($e);

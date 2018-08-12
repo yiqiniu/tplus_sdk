@@ -6,7 +6,7 @@
  * Time: 17:38
  */
 
-namespace yqn\chanjet;
+namespace yqn\tplus;
 
 
 class IWarehouse extends IBaseSdk

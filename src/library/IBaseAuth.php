@@ -6,7 +6,7 @@
  * Time: 10:39
  */
 
-namespace yqn\chanjet;
+namespace yqn\tplus;
 
 
 use Firebase\JWT\JWT;

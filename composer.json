@@ -1,6 +1,6 @@
 {
-    "name": "yqn/chanjet_sdk",
-    "description": "yiqiniu chanjet t+ client sdk",
+    "name": "yqn/tplus_sdk",
+    "description": "yiqiniu tplus t+ client sdk",
     "type": "library",
     "version": "1.0.5",
     "authors": [
@@ -17,7 +17,7 @@
     },
     "autoload": {
         "psr-4": {
-            "yqn\\chanjet\\": "src/library/",
+            "yqn\\tplus\\": "src/library/",
             "yqn\\helper\\": "src/helper/"
         },
         "files": [

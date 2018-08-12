@@ -6,7 +6,7 @@
  * Time: 17:01
  */
 
-namespace yqn\chanjet;
+namespace yqn\tplus;
 
 
 class IPartnerClass extends IBaseSdk

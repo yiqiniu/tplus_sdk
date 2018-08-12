@@ -6,11 +6,6 @@
  * Time: 10:06
  */
 
-use yqn\chanjet\IDepartment;
-use yqn\chanjet\IPartner;
-use yqn\chanjet\IPerson;
-use yqn\chanjet\IWarehouse;
-
 include "autoload.php";
 
 // 加载配置文件
@@ -65,4 +60,31 @@ function warehouse($ibaseauth){
     //$data = $warehouse->query(['Code'=>'01']);
     $data = $warehouse->query();
     var_dump($data);
+}
+
+function demo(){
+
+    if(!$this->_oauth->checkLogin()){
+        if($this->_oauth->login()===false){
+            echo '登录失败';
+            return false;
+        }
+    }
+    $url = '/person/Query';
+    //$data='dto={}';
+
+    $data=['Code'=>'1001','Name'=>'adsf'];
+    $datastr='dto=';
+    if(empty($data)){
+        $datastr.='{}';
+    }elseif(is_array($data)){
+        $datastr.=json_encode($data);
+    }else{
+        $datastr.=$data;
+    }
+
+    $retdata = $this->_oauth->httpPost($url,$datastr);
+
+    $this->writelog($retdata);
+    var_dump($retdata);
 }

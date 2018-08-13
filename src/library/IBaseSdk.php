@@ -179,7 +179,7 @@ abstract class IBaseSdk
      * @param string $perfix              操作的前缀如: param ,dto
      * @return mixed
      */
-    protected function create($data=[],$perfix=''){
+    public function create($data=[],$perfix=''){
         if(empty($data)){
             return false;
         }

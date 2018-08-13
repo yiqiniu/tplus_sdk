@@ -36,6 +36,7 @@ function tplus_load($name,$baseauth=null){
     }
     catch (\Exception $e){
         var_dump($e);
+        return null;
     }
 }
 

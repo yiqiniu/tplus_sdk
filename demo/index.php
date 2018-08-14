@@ -21,9 +21,11 @@ $ibaseauth = tplus_baseAuth($config);
 if($ibaseauth->autologin()){
     //person($ibaseauth);
     //partner($ibaseauth);
-    warehouse($ibaseauth);
-    department($ibaseauth);
+   // warehouse($ibaseauth);
+    //department($ibaseauth);
+    //inventoryClass();
 
+    inventory();
 }
 
 /**
@@ -61,30 +63,30 @@ function warehouse($ibaseauth){
     $data = $warehouse->query();
     var_dump($data);
 }
+// 存货分类
+function inventoryClass(){
+    // 库存表
+    $inventoryClass = tplus_load('inventoryClass');
+    //$data = $warehouse->query(['Code'=>'01']);
+    $data = $inventoryClass->query();
+    var_dump($data);
+}
 
-function demo(){
+//存货
+function inventory(){
 
-    if(!$this->_oauth->checkLogin()){
-        if($this->_oauth->login()===false){
-            echo '登录失败';
-            return false;
-        }
-    }
-    $url = '/person/Query';
-    //$data='dto={}';
+    // 库存表
+    $inventory = tplus_load('inventory');
+    //$data = $warehouse->query(['Code'=>'01']);
+    $data = $inventory->query(['InventoryClass'=>['Code'=>'11']]);
+    var_dump($data);
+}
 
-    $data=['Code'=>'1001','Name'=>'adsf'];
-    $datastr='dto=';
-    if(empty($data)){
-        $datastr.='{}';
-    }elseif(is_array($data)){
-        $datastr.=json_encode($data);
-    }else{
-        $datastr.=$data;
-    }
+//  销售订单
+function saleOrder(){
 
-    $retdata = $this->_oauth->httpPost($url,$datastr);
+    // 库存表
+    $saleOrder = tplus_load('inventory');
 
-    $this->writelog($retdata);
-    var_dump($retdata);
+
 }

@@ -2,22 +2,20 @@
 /**
  * Created by PhpStorm.
  * User: gjianbo
- * Date: 2018/8/7
- * Time: 17:26
+ * Date: 2018/8/14
+ * Time: 17:14
  */
 
 namespace yqn\tplus;
 
 
 /**
- * 合作伙伴
- * Class Partner
- * @package yqn\chanjet
+ * 销售订单
+ * Class ISaleOrder
+ * @package yqn\tplus
  */
-class IPartner  extends IBaseSdk
+class ISaleOrder extends IBaseSdk
 {
-
-    protected $selectfield='ID,Code,Name,Shorthand,PartnerAbbName';
     protected $param_prefix=[
         'query'=>'dto',
         'create'=>'dto',

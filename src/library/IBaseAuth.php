@@ -42,15 +42,27 @@ class IBaseAuth
 
 
 
-    //配置文件
+    //T+配置文件
+    private $_tplusconfig = null;
+
+    //全部的配置文件
     private $_config = [
-        'serverUrl' => '',
-        "appKey" => '',
-        "appSecret" => '',
-        'privceKey' => '',
-        'orgid' => '',
-        'cachePath'=>''
+        'api'=>[
+            'serverUrl' => '',
+            "appKey" => '',
+            "appSecret" => '',
+            'privceKey' => '',
+            'orgid' => '',
+            'cachePath'=>''
+        ],
+        'api_debug'=>false,
+        //默认缓存和日志保存的位置
+        'runtime'=>'',
+        'cache'=>[
+            'type'=>'file'
+        ]
     ];
+
 
     /**
      * ChanjetOAuth constructor.
@@ -58,35 +70,38 @@ class IBaseAuth
      */
     public function __construct($config)
     {
-        $this->_config = array_merge($this->_config, $config['api']);
-        if (empty($this->_config['serverUrl'])) {
+        //全部配置
+        $this->_config=array_merge($this->_config, $config);
+        //tplus的配置
+        $this->_tplusconfig = $this->_config['api'];
+        if (empty($this->_tplusconfig['serverUrl'])) {
             throw new InvalidArgumentException("Missing Config -- [serverUrl]");
         }
 
-        if (empty($this->_config['appKey'])) {
+        if (empty($this->_tplusconfig['appKey'])) {
             throw new InvalidArgumentException("Missing Config -- [appKey]");
         }
-        if (empty($this->_config['appSecret'])) {
+        if (empty($this->_tplusconfig['appSecret'])) {
             throw new InvalidArgumentException("Missing Config -- [appSecret]");
         }
-        if (empty($this->_config['appPrivateKey'])) {
+        if (empty($this->_tplusconfig['appPrivateKey'])) {
             throw new InvalidArgumentException("Missing Config -- [appPrivateKey]");
         }
-        if (!file_exists($this->_config['appPrivateKey'])) {
+        if (!file_exists($this->_tplusconfig['appPrivateKey'])) {
             throw new InvalidArgumentException("privceKey File not Exist");
         }
-        $this->_privekey = file_get_contents($this->_config['appPrivateKey']);
+        $this->_privekey = file_get_contents($this->_tplusconfig['appPrivateKey']);
         //运行保存的路径
         $this->_runtime_path='../'.dirname(__DIR__) . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR;
 
 
         //是否自动记录日志
-        if(!empty($config['api_debug'])){
-            $this->debug=$config['api_debug'];
+        if(!empty($this->_config['api_debug'])){
+            $this->debug=$this->_config['api_debug'];
         }
         //设置缓存的路径
-        if(!empty($config['runtime'])){
-            $this->_runtime_path = $config['runtime'];
+        if(!empty($this->_config['runtime'])){
+            $this->_runtime_path = $this->_config['runtime'];
         }
         $this->initialize();
 
@@ -100,10 +115,30 @@ class IBaseAuth
     {
 
 
+
         // 设置日志的路径
         Tools::$log_path=$this->_runtime_path.'logs'.DIRECTORY_SEPARATOR;
         // 设置缓存的路径
         Tools::$cache_path=$this->_runtime_path.'cache'.DIRECTORY_SEPARATOR;
+
+
+        // 使用指定的缓存
+        $cache_name=isset($this->_config['cache']['type'])?$this->_config['cache']['type']:'file';
+
+        $classname = '\\yqn\\helper\\cache\\I' .ucfirst($cache_name);
+        if(class_exists($classname)){
+            switch($cache_name){
+                case "file":
+                    Tools::$cache=$classname::getInstance(Tools::$cache_path);
+                    break;
+                case 'redis':
+                    Tools::$cache=$classname::getInstance(isset($this->_config['cache']['redis'])?$this->_config['cache']['redis']:[]);
+                    break;
+                default:
+                    Tools::$cache=$classname::getInstance($this->_runtime_path.'cache'.DIRECTORY_SEPARATOR);
+                    break;
+            }
+        }
 
         //判断是否登录过
         if($token=Tools::getCache('access_token_'.date('Y-m-d'))){
@@ -135,9 +170,9 @@ class IBaseAuth
         if(empty($this->_sign)){
 
             $appdata = [
-                'appkey' => $this->_config['appKey'],
-                'orgid' => $this->_config['orgid'],
-                'appsecret' => $this->_config['appSecret']
+                'appkey' => $this->_tplusconfig['appKey'],
+                'orgid' => $this->_tplusconfig['orgid'],
+                'appsecret' => $this->_tplusconfig['appSecret']
             ];
             $md5key = md5(json_encode($appdata));
             $signData = [];
@@ -149,7 +184,7 @@ class IBaseAuth
             $signData['exp'] = time() + $this->_token_timeout;
             $sign = JWT::encode($signData, $this->_privekey, 'RS256');
 
-            $auth = ['appKey' => $this->_config['appKey'], 'authInfo' => $sign, 'orgId' => $this->_config['orgid']];
+            $auth = ['appKey' => $this->_tplusconfig['appKey'], 'authInfo' => $sign, 'orgId' => $this->_tplusconfig['orgid']];
             $this->_sign = base64_encode(json_encode($auth));
             if (!empty($this->_access_token)) {
                 Tools::setCache('http_sign_' . date('Y-m-d'), $this->_sign, $this->_token_timeout);
@@ -221,15 +256,15 @@ class IBaseAuth
      * @throws \Exception 用户名和org同时为空时
      */
     public function login($username='',$passwd='',$accNum=''){
-        if (empty($username) && empty($this->_config['orgid'])){
+        if (empty($username) && empty($this->_tplusconfig['orgid'])){
             throw  new \Exception("no specified Username Or orgid");
         }
         $postdata=[];
         if (!empty($username)){
             $postdata = ['userName' => $username, 'password' => $passwd, 'accNum' => $accNum];
-            $url= $this->_config['serverUrl'].self::USERNAME_URL;
+            $url= $this->_tplusconfig['serverUrl'].self::USERNAME_URL;
         }else{
-            $url= $this->_config['serverUrl'].self::ORGID_URL;
+            $url= $this->_tplusconfig['serverUrl'].self::ORGID_URL;
         }
 
         //进行登录操作
@@ -288,7 +323,7 @@ class IBaseAuth
      * @return bool|string
      */
     public function geturl($url=''){
-        if(stripos($url,$this->_config['serverUrl'])!==false){
+        if(stripos($url,$this->_tplusconfig['serverUrl'])!==false){
             return $url;
         }
         if(!empty($url)){
@@ -297,7 +332,7 @@ class IBaseAuth
                $url=substr($url,1);
            }
         }
-        return $this->_config['serverUrl'].$url;
+        return $this->_tplusconfig['serverUrl'].$url;
     }
 
     /**

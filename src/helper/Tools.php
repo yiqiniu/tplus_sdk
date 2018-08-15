@@ -30,6 +30,9 @@ class Tools
     //默认日志保存的文件路径
     public static $log_path=null;
 
+    //处理缓存的类
+    public static $cache=null;
+
 
     /**
      * 产生随机字符串
@@ -273,11 +276,17 @@ class Tools
      */
     public static function setCache($name, $value = '', $expired = 3600)
     {
-        $cache_file = self::getCacheName($name);
-        $content = serialize(['name' => $name, 'value' => $value, 'expired' => time() + intval($expired)]);
-        if (!file_put_contents($cache_file, $content)) {
-            throw new LocalCacheException('local cache error.', '0');
+        if(self::$cache!==null){
+           return self::$cache->setCache($name,$value,$expired);
+        }else{
+
+             $cache_file = self::getCacheName($name);
+             $content = serialize(['name' => $name, 'value' => $value, 'expired' => time() + intval($expired)]);
+             if (!file_put_contents($cache_file, $content)) {
+                  throw new LocalCacheException('local cache error.', '0');
+             }
         }
+
     }
 
     /**
@@ -287,15 +296,19 @@ class Tools
      */
     public static function getCache($name)
     {
-        $cache_file = self::getCacheName($name);
-        if (file_exists($cache_file) && ($content = file_get_contents($cache_file))) {
-            $data = unserialize($content);
-            if (isset($data['expired']) && (intval($data['expired']) === 0 || intval($data['expired']) >= time())) {
-                return $data['value'];
+        if(self::$cache!==null){
+            return self::$cache->getCache($name);
+        }else{
+            $cache_file = self::getCacheName($name);
+            if (file_exists($cache_file) && ($content = file_get_contents($cache_file))) {
+                $data = unserialize($content);
+                if (isset($data['expired']) && (intval($data['expired']) === 0 || intval($data['expired']) >= time())) {
+                    return $data['value'];
+                }
+                self::delCache($name);
             }
-            self::delCache($name);
+            return null;
         }
-        return null;
     }
 
     /**
@@ -305,8 +318,12 @@ class Tools
      */
     public static function delCache($name)
     {
-        $cache_file = self::getCacheName($name);
-        return file_exists($cache_file) ? unlink($cache_file) : true;
+        if(self::$cache!==null){
+            return self::$cache->delCache($name);
+        }else{
+            $cache_file = self::getCacheName($name);
+            return file_exists($cache_file) ? unlink($cache_file) : true;
+        }
     }
 
     /**

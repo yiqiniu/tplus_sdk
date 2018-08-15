@@ -22,10 +22,10 @@ if($ibaseauth->autologin()){
     //person($ibaseauth);
     //partner($ibaseauth);
    // warehouse($ibaseauth);
-    //department($ibaseauth);
+    department($ibaseauth);
     //inventoryClass();
 
-    inventory();
+ //   inventory();
 }
 
 /**

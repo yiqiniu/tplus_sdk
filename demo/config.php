@@ -24,4 +24,15 @@ return [
     'api_debug'=>true,
     //默认缓存和日志保存的位置
     'runtime'=>dirname(__DIR__) . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR,
+    'cache'=>[
+        //缓存类型,只支持file 或redis  redis的话,请配置redis 连接信息
+        'type'=>'file',
+        'redis'=>[
+            'host' => '127.0.0.1', // redis主机
+            'port' => 6379, // redis端口
+            'password' => '', // 密码
+            'persistent' => true, // 是否长连接
+            'session_name' => 'yqn_', // sessionkey前缀
+        ],
+    ]
 ];

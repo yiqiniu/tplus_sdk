@@ -48,7 +48,7 @@ class ISaleOrder extends IBaseSdk
 
         $senddata = '_args=' . json_encode($data);
 
-        return $this->post_create($senddata);
+        return $this->post_createBatch($senddata);
     }
 
 

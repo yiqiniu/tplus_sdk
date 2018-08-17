@@ -11,7 +11,7 @@ use yqn\tplus\Loader  as tplusLoader;
 
 define('TPLUS_START_TIME', microtime(true));
 define('TPLUS_START_MEM', memory_get_usage());
-define('IS_CLI', PHP_SAPI == 'cli' ? true : false);
+
 
 /**
  *  设置接口要使用的信息,参考实例说明

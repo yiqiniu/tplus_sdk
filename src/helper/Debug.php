@@ -191,7 +191,7 @@ class Debug
         var_dump($var);
         $output = preg_replace('/\]\=\>\n(\s+)/m', '] => ', ob_get_clean());
 
-        if (IS_CLI) {
+        if (PHP_SAPI == 'cli') {
             $output = PHP_EOL . $label . $output . PHP_EOL;
         } else {
             if (!extension_loaded('xdebug')) {

@@ -183,8 +183,8 @@ abstract class IBaseSdk
         if(empty($data)){
             return false;
         }
-        if(empty($perfix) && isset($this->param_prefix['query'])){
-            $perfix = $this->param_prefix['query'];
+        if (empty($perfix) && isset($this->param_prefix['create'])) {
+            $perfix = $this->param_prefix['create'];
         }
         $senddata = ($perfix.'=').json_encode($data);
         return $this->post_create($senddata);
@@ -201,8 +201,8 @@ abstract class IBaseSdk
         if(empty($data)){
             return false;
         }
-        if(empty($perfix) && isset($this->param_prefix['query'])){
-            $perfix = $this->param_prefix['query'];
+        if (empty($perfix) && isset($this->param_prefix['update'])) {
+            $perfix = $this->param_prefix['update'];
         }
         $senddata = ($perfix.'=').json_encode($data);
         return $this->post_update($senddata);
@@ -219,8 +219,8 @@ abstract class IBaseSdk
         if(empty($where)){
             return false;
         }
-        if(empty($perfix) && isset($this->param_prefix['query'])){
-            $perfix = $this->param_prefix['query'];
+        if (empty($perfix) && isset($this->param_prefix['delete'])) {
+            $perfix = $this->param_prefix['delete'];
         }
         $senddata = $perfix.'='.json_encode($where);
         return $this->post_delete($senddata);

@@ -68,7 +68,7 @@ class IBaseAuth
      * ChanjetOAuth constructor.
      * @param $_config
      */
-    public function __construct($config)
+    private function __construct($config)
     {
         //全部配置
         $this->_config=array_merge($this->_config, $config);

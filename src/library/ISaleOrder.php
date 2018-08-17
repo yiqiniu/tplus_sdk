@@ -21,6 +21,40 @@ class ISaleOrder extends IBaseSdk
         'create'=>'dto',
         'update'=>'dto',
         'delete'=>'dto',
+        'batchcreate' => 'dto'
     ];
+    protected $_opAction = [
+        // 查询
+        'query' => 'Query',
+        // 创建
+        'create' => 'Create',
+        // 修改
+        'update' => 'Update',
+        // 删除
+        'delete' => 'Delete',
+        //批量创建
+        'batchcreate' => 'CreateBatch'
+    ];
+
+    /**
+     * 添加数据接口,以完成默认操作,必须在子类调用,外部不能直接访问
+     * @param array $data 要添加的数据
+     * @param string $perfix 操作的前缀如: param ,dto
+     * @param bool $batch 批量添加 true 批量  false 单条
+     * @return mixed
+     */
+    public function batchCreate($data = [], $perfix = '', $batch = false)
+    {
+        if (empty($data)) {
+            return false;
+        }
+        if (empty($perfix) && isset($this->param_prefix['batchcreate'])) {
+            $perfix = $this->param_prefix['batchcreate'];
+        }
+        $senddata = ($perfix . '=') . json_encode($data);
+        return $this->post_create($senddata);
+    }
+
+
 
 }

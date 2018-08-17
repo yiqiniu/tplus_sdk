@@ -8,6 +8,7 @@
 
 namespace yqn\tplus;
 
+use yqn\helper\Debug;
 use yqn\helper\Tools;
 
 abstract class IBaseSdk
@@ -26,7 +27,7 @@ abstract class IBaseSdk
     protected  $opName='';
     //子类的类名 若符合规则,可自动生成操作名
     protected  $clsName='';
-  //操作菜单
+    //操作菜单
     protected  $_opAction=[
         // 查询
         'query'=>'Query',
@@ -93,13 +94,16 @@ abstract class IBaseSdk
      * @param string $method    访问的方式 get  post
      * @param string $data      访问的数据
      * @param bool $retdata     返回的结果
+     * @param string $time 耗时
      */
-    protected function accesslog($url,$method='post',$data='',$retdata=false){
+    protected function accesslog($url, $method = 'post', $data = '', $retdata = false, $time = '')
+    {
         if($this->_oauth->debug){
             $data=[
                 'classname'=>$this->clsName,
                 'url'=>$url,
                 'method'=>$method,
+                'uses_time' => $time,
                 'querydata'=>$data,
                 'return'=>$retdata
             ];
@@ -114,7 +118,7 @@ abstract class IBaseSdk
      * @param $name     string     访问的操作类型和名称
      * @param string $arguments    访问的数据
      */
-    protected function errorlog($name,$arguments=''){
+    protected function errorlog($name, $arguments=''){
         $data=[
             'classname'=>$this->clsName,
             'name'=>$name,
@@ -122,6 +126,7 @@ abstract class IBaseSdk
         ];
         Tools::writeLogger($this->logfile,$data);
     }
+
     /**
      * 魔术方式 用于处理统一的发送和和处理
      * @param $name
@@ -136,6 +141,7 @@ abstract class IBaseSdk
             $this->errorlog($name, $arguments);
             return false;
         }
+        Debug::remark('begin');
         $url = $this->opName.'/'.$this->_opAction[$name];
         $retdata=false;
         switch ($type){
@@ -146,7 +152,10 @@ abstract class IBaseSdk
                 $retdata=$this->_oauth->httpGet($url,$arguments[0],isset($arguments[1])?$arguments[1]:false);
                 break;
         }
-        $this->accesslog($url,$type,$arguments[0],$retdata);
+        Debug::remark('end');
+
+        $this->accesslog($url, $type, $arguments[0], $retdata, Debug::getRangeTime('begin', 'end', 6) . 's');
+
         return $retdata;
     }
 
@@ -157,7 +166,7 @@ abstract class IBaseSdk
      * @return mixed
      */
 
-    public function query($where=[],$perfix=''){
+    public function query($where=[], $perfix=''){
         if(is_string($where)){
             $perfix=$where;
             $where=[];
@@ -173,6 +182,7 @@ abstract class IBaseSdk
         $senddata=($perfix.'=').(empty($where)?'{}':json_encode($where));
         return $this->post_query($senddata);
     }
+
     /**
      * 添加数据接口,以完成默认操作,必须在子类调用,外部不能直接访问
      * @param array $data                 要添加的数据
@@ -227,6 +237,4 @@ abstract class IBaseSdk
     }
 
 
-
-
-  }
+}

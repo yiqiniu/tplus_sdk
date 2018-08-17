@@ -6,7 +6,12 @@
  * Time: 11:09
  */
 
+use yqn\helper\Debug as tplusDebug;
 use yqn\tplus\Loader  as tplusLoader;
+
+define('THINK_START_TIME', microtime(true));
+define('THINK_START_MEM', memory_get_usage());
+define('IS_CLI', PHP_SAPI == 'cli' ? true : false);
 
 /**
  *  设置接口要使用的信息,参考实例说明
@@ -38,5 +43,27 @@ function tplus_load($name,$baseauth=null){
         var_dump($e);
         return null;
     }
+}
+
+/**
+ * 记录时间（微秒）和内存使用情况
+ * @param string $start 开始标签
+ * @param string $end 结束标签
+ * @param integer|string $dec 小数位 如果是m 表示统计内存占用
+ * @return mixed
+ */
+function tplus_debug($start, $end = '', $dec = 6)
+{
+    if ('' == $end) {
+        tplusDebug::remark($start);
+    } else {
+        return 'm' == $dec ? tplusDebug::getRangeMem($start, $end) : tplusDebug::getRangeTime($start, $end, $dec);
+    }
+}
+
+
+function tplus_dump($var, $echo = true, $label = null)
+{
+    return tplusDebug::dump($var, $echo, $label);
 }
 

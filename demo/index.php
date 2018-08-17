@@ -22,7 +22,7 @@ if($ibaseauth->autologin()){
     //person($ibaseauth);
     //partner($ibaseauth);
    // warehouse($ibaseauth);
-    department($ibaseauth);
+    department();
     //inventoryClass();
 
  //   inventory();
@@ -31,12 +31,17 @@ if($ibaseauth->autologin()){
 /**
  * @param $ibaseauth
  */
-function department($ibaseauth){
+function department()
+{
 
+    tplus_debug('begin');
     $department =tplus_load('department');
     //$department = new IDepartment($ibaseauth);
     $data =$department->query();
-    var_dump($data);
+    tplus_debug('end');
+    echo tplus_debug('begin', 'end', 6) . 's';
+
+    tplus_dump($data);
 }
 
 

@@ -9,8 +9,8 @@
 use yqn\helper\Debug as tplusDebug;
 use yqn\tplus\Loader  as tplusLoader;
 
-define('THINK_START_TIME', microtime(true));
-define('THINK_START_MEM', memory_get_usage());
+define('TPLUS_START_TIME', microtime(true));
+define('TPLUS_START_MEM', memory_get_usage());
 define('IS_CLI', PHP_SAPI == 'cli' ? true : false);
 
 /**

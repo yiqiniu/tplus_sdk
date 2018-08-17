@@ -76,7 +76,7 @@ class Debug
      */
     public static function getUseTime($dec = 6)
     {
-        return number_format((microtime(true) - THINK_START_TIME), $dec);
+        return number_format((microtime(true) - TPLUS_START_TIME), $dec);
     }
 
     /**
@@ -113,7 +113,7 @@ class Debug
      */
     public static function getUseMem($dec = 2)
     {
-        $size = memory_get_usage() - THINK_START_MEM;
+        $size = memory_get_usage() - TPLUS_START_MEM;
         $a = ['B', 'KB', 'MB', 'GB', 'TB'];
         $pos = 0;
 

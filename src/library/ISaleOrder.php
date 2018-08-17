@@ -21,7 +21,7 @@ class ISaleOrder extends IBaseSdk
         'create'=>'dto',
         'update'=>'dto',
         'delete'=>'dto',
-        'batchcreate' => 'dto'
+        'createBatch' => 'dto'
     ];
     protected $_opAction = [
         // 查询
@@ -33,7 +33,7 @@ class ISaleOrder extends IBaseSdk
         // 删除
         'delete' => 'Delete',
         //批量创建
-        'batchcreate' => 'CreateBatch'
+        'createBatch' => 'CreateBatch'
     ];
 
     /**
@@ -43,13 +43,13 @@ class ISaleOrder extends IBaseSdk
      * @param bool $batch 批量添加 true 批量  false 单条
      * @return mixed
      */
-    public function batchCreate($data = [], $perfix = '', $batch = false)
+    public function createBatch($data = [], $perfix = '', $batch = false)
     {
         if (empty($data)) {
             return false;
         }
-        if (empty($perfix) && isset($this->param_prefix['batchcreate'])) {
-            $perfix = $this->param_prefix['batchcreate'];
+        if (empty($perfix) && isset($this->param_prefix['createBatch'])) {
+            $perfix = $this->param_prefix['createBatch'];
         }
         $senddata = ($perfix . '=') . json_encode($data);
         return $this->post_create($senddata);

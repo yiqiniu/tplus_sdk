@@ -12,6 +12,13 @@ include "autoload.php";
 $config = include 'config.demo.php';
 
 
+//$ret =tplus_pingyin();
+//$sss= $ret->str2py("北京一起牛技术部胖子",false,' ');
+//tplus_dump($sss);
+
+
+
+
 //获取认证的信息
 //$ibaseauth = IBaseAuth::getInstance($config);
 
@@ -22,7 +29,7 @@ if($ibaseauth->autologin()){
     //person($ibaseauth);
     //partner($ibaseauth);
    // warehouse($ibaseauth);
-    department();
+    //  department();
     //inventoryClass();
 
  //   inventory();

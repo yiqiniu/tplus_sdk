@@ -26,6 +26,10 @@ $ibaseauth = tplus_baseAuth($config);
 
 // 进行自动登录
 if($ibaseauth->autologin()){
+
+    $brand = tplus_load('brand');
+    $data = $brand->query();
+    var_dump($data);
     //person($ibaseauth);
     //partner($ibaseauth);
    // warehouse($ibaseauth);

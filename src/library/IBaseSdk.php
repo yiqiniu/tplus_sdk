@@ -59,8 +59,8 @@ abstract class IBaseSdk
     {
         $this->_oauth =$auth;
         //获取当前的类型
-        $this->clsName=basename(get_class($this));
-
+        $name = get_class($this);
+        $this->clsName = substr(strrchr($name, "\\"), 1);
         //根据类名 生成 opName
         //规则: 类名的第一位,必须是大写'I'开头,操作名=除第1位外首字母小写的其他字符
         if(substr($this->clsName,0,1)=='I'){
@@ -100,6 +100,7 @@ abstract class IBaseSdk
     {
         if($this->_oauth->debug){
             $data=[
+                'type' => 'accesslog',
                 'classname'=>$this->clsName,
                 'url'=>$url,
                 'method'=>$method,
@@ -118,11 +119,14 @@ abstract class IBaseSdk
      * @param $name     string     访问的操作类型和名称
      * @param string $arguments    访问的数据
      */
-    protected function errorlog($name, $arguments=''){
+    protected function errorlog($name, $arguments = '', $errinfo = [])
+    {
         $data=[
+            'type' => 'errorlog',
             'classname'=>$this->clsName,
             'name'=>$name,
-            'arguments'=>$arguments
+            'arguments' => $arguments,
+            'error' => $errinfo
         ];
         Tools::writeLogger($this->logfile,$data);
     }
@@ -138,7 +142,12 @@ abstract class IBaseSdk
         list($type, $name) = explode('_', $name);
 
         if(!in_array($type, array('post','get')) || !isset($this->_opAction[$name]) || $name=='' || $this->opName==''){
-            $this->errorlog($name, $arguments);
+            $this->errorlog($name, $arguments, ['msg' => '访问时验证失败',
+                '$this->opName' => $this->opName,
+                'name' => $name,
+                'type' => $type,
+                'opAction' => $this->_opAction,
+            ]);
             return false;
         }
         Debug::remark('begin');

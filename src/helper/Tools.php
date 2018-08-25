@@ -261,7 +261,8 @@ class Tools
             return (empty($content)) ? false:$content;
         }
         catch (\Exception $e){
-            print_r($e);
+            var_dump(print_r($e, true));
+
             return false;
            // exit();
         }

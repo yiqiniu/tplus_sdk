@@ -60,6 +60,9 @@ class IBaseAuth
         'runtime'=>'',
         'cache'=>[
             'type'=>'file'
+        ],
+        'log' => [
+            'append' => true,
         ]
     ];
 

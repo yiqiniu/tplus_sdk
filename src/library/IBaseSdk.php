@@ -27,6 +27,9 @@ abstract class IBaseSdk
     protected  $opName='';
     //子类的类名 若符合规则,可自动生成操作名
     protected  $clsName='';
+
+    //日志保存的方式,最后一条或内容追加,true 为追加  false最后一次
+    protected $log_append = true;
     //操作菜单
     protected  $_opAction=[
         // 查询
@@ -69,7 +72,8 @@ abstract class IBaseSdk
 
         //生成日志的文件名
         $this->logfile=Tools::$log_path.DIRECTORY_SEPARATOR.date('Ymd').DIRECTORY_SEPARATOR.$this->clsName.'_log.txt';
-
+        //判断日否日否可以追加
+        $this->log_append = isset($auth->_config['log']['append']) ? $auth->_config['log']['append'] : true;
         //调用其他初始化操作
         $this->initiaize();
     }
@@ -85,7 +89,7 @@ abstract class IBaseSdk
      * @param $str string/array  日志内容
      */
     public function writelog($str){
-        Tools::writeLogger($this->logfile,$str);
+        Tools::writeLogger($this->logfile, $str, $this->log_append);
     }
 
     /**
@@ -109,7 +113,7 @@ abstract class IBaseSdk
                 'return'=>$retdata
             ];
             //访问日志每次清空
-            Tools::writeLogger($this->logfile,$data,false);
+            Tools::writeLogger($this->logfile, $data, $this->log_append);
         }
 
     }
@@ -128,7 +132,7 @@ abstract class IBaseSdk
             'arguments' => $arguments,
             'error' => $errinfo
         ];
-        Tools::writeLogger($this->logfile,$data);
+        Tools::writeLogger($this->logfile, $data, $this->log_append);
     }
 
     /**

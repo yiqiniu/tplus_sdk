@@ -551,7 +551,7 @@ class Pingyin
         $py = "";
         $i = 0;
         // 加入这一句，自动识别utf-8
-        if (strlen("拼音") > 4) $s = iconv('utf-8', 'gbk', $s);
+        if (strlen("拼音") > 4) $s = iconv('utf-8', 'gbk//IGNORE', $s);
         $pyt = '';
         for ($i = 0; $i < strlen($s); $i++) {
             if (ord($s[$i]) > 128) {

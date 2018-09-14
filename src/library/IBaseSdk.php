@@ -71,7 +71,7 @@ abstract class IBaseSdk
         }
 
         //生成日志的文件名
-        $this->logfile=Tools::$log_path.DIRECTORY_SEPARATOR.date('Ymd').DIRECTORY_SEPARATOR.$this->clsName.'_log.txt';
+        $this->logfile = Tools::$log_path . DIRECTORY_SEPARATOR . date('Ym') . DIRECTORY_SEPARATOR . date('d') . '_' . $this->clsName . '_log.txt';
         //判断日否日否可以追加
         $this->log_append = isset($auth->_config['log']['append']) ? $auth->_config['log']['append'] : true;
         //调用其他初始化操作

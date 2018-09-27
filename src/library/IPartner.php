@@ -14,15 +14,15 @@ namespace yqn\tplus;
  * Class Partner
  * @package yqn\chanjet
  */
-class IPartner  extends IBaseSdk
+class IPartner extends IBaseSdk
 {
 
-    protected $selectfield='ID,Code,Name,Shorthand,PartnerAbbName';
-    protected $param_prefix=[
-        'query'=>'dto',
-        'create'=>'dto',
-        'update'=>'dto',
-        'delete'=>'dto',
+    protected $selectfield = 'ID,Code,Name,Shorthand,PartnerAbbName,';
+    protected $param_prefix = [
+        'query' => 'param',
+        'create' => 'dto',
+        'update' => 'dto',
+        'delete' => 'dto',
     ];
 
 }

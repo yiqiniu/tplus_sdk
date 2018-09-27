@@ -6,6 +6,8 @@
  * Time: 10:06
  */
 
+use yqn\helper\Tools;
+
 include "autoload.php";
 
 // 加载配置文件
@@ -17,26 +19,24 @@ $config = include 'config.demo.php';
 //tplus_dump($sss);
 
 
-
-
 //获取认证的信息
 //$ibaseauth = IBaseAuth::getInstance($config);
 
 $ibaseauth = tplus_baseAuth($config);
 
 // 进行自动登录
-if($ibaseauth->autologin()){
+if ($ibaseauth->autologin()) {
 
-    $brand = tplus_load('brand');
-    $data = $brand->query();
-    var_dump($data);
+    /* $brand = tplus_load('brand');
+     $data = $brand->query();
+     var_dump($data);*/
     //person($ibaseauth);
-    //partner($ibaseauth);
-   // warehouse($ibaseauth);
+    partner($ibaseauth);
+    // warehouse($ibaseauth);
     //  department();
     //inventoryClass();
 
- //   inventory();
+    //   inventory();
 }
 
 /**
@@ -46,9 +46,9 @@ function department()
 {
 
     tplus_debug('begin');
-    $department =tplus_load('department');
+    $department = tplus_load('department');
     //$department = new IDepartment($ibaseauth);
-    $data =$department->query();
+    $data = $department->query();
     tplus_debug('end');
     echo tplus_debug('begin', 'end', 6) . 's';
 
@@ -57,30 +57,46 @@ function department()
 
 
 //合作伙伴
-function partner($ibaseauth){
-    $partner =tplus_load('partner');
+function partner($ibaseauth)
+{
+    $partner = tplus_load('partner');
     //$partner = new IPartner($ibaseauth);
-    $data =$partner->query(['Code'=>'010100010']);
-    var_dump($data);
+
+
+    $retdata = Tools::getCache('partner');
+    if (empty($retdata)) {
+        $postdata = [
+            'SelectFields' => 'ID,Code,Name,Shorthand,PartnerAbbName,PartnerAddresDTOs.Code,PartnerAddresDTOs.telephoneNo'
+        ];
+        $retdata = $partner->query($postdata);
+        Tools::setCache('partner', $retdata);
+    }
+    //var_dump(sizeof($retdata));
+    //var_dump($retdata);
 }
+
 // 员工表
-function person($ibaseauth){
+function person($ibaseauth)
+{
     $Person = tplus_load('person');
-    $data =$Person->query();
+    $data = $Person->query();
     var_dump($data);
 }
 
 
 //仓库操作
-function warehouse($ibaseauth){
+function warehouse($ibaseauth)
+{
     // 库存表
     $warehouse = tplus_load('warehouse');
     //$data = $warehouse->query(['Code'=>'01']);
     $data = $warehouse->query();
     var_dump($data);
 }
+
 // 存货分类
-function inventoryClass(){
+function inventoryClass()
+{
     // 库存表
     $inventoryClass = tplus_load('inventoryClass');
     //$data = $warehouse->query(['Code'=>'01']);
@@ -89,17 +105,19 @@ function inventoryClass(){
 }
 
 //存货
-function inventory(){
+function inventory()
+{
 
     // 库存表
     $inventory = tplus_load('inventory');
     //$data = $warehouse->query(['Code'=>'01']);
-    $data = $inventory->query(['InventoryClass'=>['Code'=>'11']]);
+    $data = $inventory->query(['InventoryClass' => ['Code' => '11']]);
     var_dump($data);
 }
 
 //  销售订单
-function saleOrder(){
+function saleOrder()
+{
 
     // 库存表
     $saleOrder = tplus_load('inventory');

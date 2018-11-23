@@ -31,12 +31,23 @@ if ($ibaseauth->autologin()) {
      $data = $brand->query();
      var_dump($data);*/
     //person($ibaseauth);
-    partner($ibaseauth);
+    //partner($ibaseauth);
     // warehouse($ibaseauth);
     //  department();
     //inventoryClass();
 
     //   inventory();
+
+    $sale = tplus_load('saleDelivery');
+    $query = [
+        [
+            'WhereName' => 'SaleDelivery.ExternalVoucherCode',
+            'BeginValue' => 'zy_20181121084959405473600',
+        ]
+    ];
+    $data = $sale->query($query, 'queryParam');
+    tplus_dump($data);
+
 }
 
 /**

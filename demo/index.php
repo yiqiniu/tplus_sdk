@@ -38,6 +38,7 @@ if ($ibaseauth->autologin()) {
 
     //   inventory();
 
+    //查询销货单
     $sale = tplus_load('saleDelivery');
     $query = [
         [
@@ -45,6 +46,63 @@ if ($ibaseauth->autologin()) {
             'BeginValue' => 'zy_20181121084959405473600',
         ]
     ];
+    /**
+     * 'Rows' =>
+     * array (size=1)
+     * 0 =>
+     * array (size=51)
+     * 'voucherdate' => string '/Date(1542729600000)/' (length=21)
+     * 'saleDeliveryCode' => string 'SA-2018-11-060304-0000558' (length=25)
+     * 'externalCode' => null
+     * 'busiTypeName' => string '普通销售' (length=12)
+     * 'isSaleOut' => string '已出库' (length=9)
+     * 'isCancel' => string '已结清' (length=9)
+     * 'saleInvoiceNo' => string '' (length=0)
+     * 'CurrencyName' => string '人民币' (length=9)
+     * 'partnerCode' => string '1030003' (length=7)
+     * 'partnerName' => string '百世快递' (length=12)
+     * 'SettleCustomerCode' => string '1030003' (length=7)
+     * 'SettleCustomer' => string '百世快递' (length=12)
+     * 'deliveryDate' => null
+     * 'ReciveTypeName' => string '其它' (length=6)
+     * 'recivingMaturity' => null
+     * 'address' => string '山东省 济宁市 嘉祥县 仲山镇狼山' (length=45)
+     * 'linkMan' => string '司莉莉' (length=9)
+     * 'Memo' => string '0' (length=1)
+     * 'priuserdefnvc1' => string '' (length=0)
+     * 'priuserdefnvc2' => string '2018-11-21 09:06:23' (length=19)
+     * 'priuserdefnvc3' => string '司莉莉  电话：18605375071 线上支付260' (length=47)
+     * 'pubuserdefnvc1' => string '百世汇通' (length=12)               //
+     * 'pubuserdefnvc2' => string '司莉莉51324738200179' (length=23)
+     * 'pubuserdefnvc3' => string '线上' (length=6)
+     * 'warehouseCode' => string '01' (length=2)
+     * 'warehouseName' => string '一仓' (length=6)
+     * 'InventoryBarCode' => null
+     * 'inventoryCode' => string 'p0000002485' (length=11)
+     * 'inventoryName' => string '贝因美红爱加800克听装1段' (length=34)
+     * 'specification' => string '箱' (length=3)
+     * 'BrandName' => string '贝因美' (length=9)
+     * 'freeItem0' => null
+     * 'freeItem1' => null
+     * 'freeItem2' => null
+     * 'freeItem3' => null
+     * 'freeItem4' => null
+     * 'freeItem5' => null
+     * 'freeItem6' => null
+     * 'freeItem7' => null
+     * 'freeItem8' => null
+     * 'freeItem9' => null
+     * 'unitName' => string '箱' (length=3)
+     * 'Batch' => string '20170501' (length=8)
+     * 'ProductionDate' => string '/Date(1493568000000)/' (length=21)
+     * 'ExpiryDate' => string '/Date(1556553600000)/' (length=21)
+     * 'quantity' => float 1
+     * 'origTaxPrice' => float 260
+     * 'origTaxAmount' => float 260
+     * 'detailOrigSettleAmount' => float 260
+     * 'saleInvoiceQuantity' => null
+     * 'saleInvoiceOrigAmount' => null
+     */
     $data = $sale->query($query, 'queryParam');
     tplus_dump($data);
 

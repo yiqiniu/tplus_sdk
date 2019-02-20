@@ -18,7 +18,7 @@ class IBaseAuth
 {
 
     //创建静态私有的变量保存该类对象
-    static private $instance = null;
+    static private $instance = [];
     //保存已生成的token
     private $_access_token = '';
 
@@ -155,10 +155,11 @@ class IBaseAuth
      */
     static public function getInstance($config)
     {
-        if (!self::$instance instanceof self) {
-            self::$instance = new self($config);
+        $sign = md5(serialize($config));
+        if (!isset(self::$instance[$sign])) {
+            self::$instance[$sign] = new self($config);
         }
-        return self::$instance;
+        return self::$instance[$sign];
     }
 
     /**

@@ -1,28 +1,27 @@
 {
-    "name": "yqn/tplus_sdk",
-    "description": "yiqiniu tplus client sdk",
-    "type": "library",
-  "version": "1.1.2",
-    "authors": [
-        {
-            "name": "gjianbo",
-            "email": "gjianbo@qq.com"
-        }
-    ],
-    "minimum-stability": "stable",
-    "prefer-stable": true,
-    "require": {
-    	"php":">=7.0",
-        "firebase/php-jwt": "^5.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "yqn\\tplus\\": "src/library/",
-            "yqn\\helper\\": "src/helper/"
-        },
-        "files": [
-            "src/helper.php"
-        ]
+  "name": "yqn/tplus_sdk",
+  "description": "yiqiniu tplus client sdk",
+  "type": "library",
+  "version": "1.1.4",
+  "authors": [
+    {
+      "name": "gjianbo",
+      "email": "gjianbo@qq.com"
     }
-
+  ],
+  "minimum-stability": "stable",
+  "prefer-stable": true,
+  "require": {
+    "php": ">=7.0",
+    "firebase/php-jwt": "^5.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "yqn\\tplus\\": "src/library/",
+      "yqn\\helper\\": "src/helper/"
+    },
+    "files": [
+      "src/helper.php"
+    ]
+  }
 }

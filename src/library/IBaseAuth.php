@@ -18,7 +18,7 @@ class IBaseAuth
 {
 
     //创建静态私有的变量保存该类对象
-    static private  $instance=null;
+    static private $instance = null;
     //保存已生成的token
     private $_access_token = '';
 
@@ -31,15 +31,14 @@ class IBaseAuth
     //header
     protected $_header = null;
     //缓存有效期
-    private $_token_timeout=3600*5;
+    private $_token_timeout = 3600 * 5;
 
     //已生成有签名
     private $_sign = '';
     //runtime路径
-    private $_runtime_path='';
+    private $_runtime_path = '';
     //是否开始调试
-    private $debug=false;
-
+    private $debug = false;
 
 
     //T+配置文件
@@ -47,19 +46,19 @@ class IBaseAuth
 
     //全部的配置文件
     private $_config = [
-        'api'=>[
+        'api' => [
             'serverUrl' => '',
             "appKey" => '',
             "appSecret" => '',
             'privceKey' => '',
             'orgid' => '',
-            'cachePath'=>''
+            'cachePath' => ''
         ],
-        'api_debug'=>false,
+        'api_debug' => false,
         //默认缓存和日志保存的位置
-        'runtime'=>'',
-        'cache'=>[
-            'type'=>'file'
+        'runtime' => '',
+        'cache' => [
+            'type' => 'file'
         ],
         'log' => [
             'append' => true,
@@ -74,7 +73,7 @@ class IBaseAuth
     private function __construct($config)
     {
         //全部配置
-        $this->_config=array_merge($this->_config, $config);
+        $this->_config = array_merge($this->_config, $config);
         //tplus的配置
         $this->_tplusconfig = $this->_config['api'];
         if (empty($this->_tplusconfig['serverUrl'])) {
@@ -95,15 +94,15 @@ class IBaseAuth
         }
         $this->_privekey = file_get_contents($this->_tplusconfig['appPrivateKey']);
         //运行保存的路径
-        $this->_runtime_path='../'.dirname(__DIR__) . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR;
+        $this->_runtime_path = '../' . dirname(__DIR__) . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR;
 
 
         //是否自动记录日志
-        if(!empty($this->_config['api_debug'])){
-            $this->debug=$this->_config['api_debug'];
+        if (!empty($this->_config['api_debug'])) {
+            $this->debug = $this->_config['api_debug'];
         }
         //设置缓存的路径
-        if(!empty($this->_config['runtime'])){
+        if (!empty($this->_config['runtime'])) {
             $this->_runtime_path = $this->_config['runtime'];
         }
         $this->initialize();
@@ -118,33 +117,32 @@ class IBaseAuth
     {
 
 
-
         // 设置日志的路径
-        Tools::$log_path=$this->_runtime_path.'logs'.DIRECTORY_SEPARATOR;
+        Tools::$log_path = $this->_runtime_path . 'logs' . DIRECTORY_SEPARATOR;
         // 设置缓存的路径
-        Tools::$cache_path=$this->_runtime_path.'cache'.DIRECTORY_SEPARATOR;
+        Tools::$cache_path = $this->_runtime_path . 'cache' . DIRECTORY_SEPARATOR;
 
 
         // 使用指定的缓存
-        $cache_name=isset($this->_config['cache']['type'])?$this->_config['cache']['type']:'file';
+        $cache_name = isset($this->_config['cache']['type']) ? $this->_config['cache']['type'] : 'file';
 
-        $classname = '\\yqn\\helper\\cache\\I' .ucfirst($cache_name);
-        if(class_exists($classname)){
-            switch($cache_name){
+        $classname = '\\yqn\\helper\\cache\\I' . ucfirst($cache_name);
+        if (class_exists($classname)) {
+            switch ($cache_name) {
                 case "file":
-                    Tools::$cache=$classname::getInstance(Tools::$cache_path);
+                    Tools::$cache = $classname::getInstance(Tools::$cache_path);
                     break;
                 case 'redis':
-                    Tools::$cache=$classname::getInstance(isset($this->_config['cache']['redis'])?$this->_config['cache']['redis']:[]);
+                    Tools::$cache = $classname::getInstance(isset($this->_config['cache']['redis']) ? $this->_config['cache']['redis'] : []);
                     break;
                 default:
-                    Tools::$cache=$classname::getInstance($this->_runtime_path.'cache'.DIRECTORY_SEPARATOR);
+                    Tools::$cache = $classname::getInstance($this->_runtime_path . 'cache' . DIRECTORY_SEPARATOR);
                     break;
             }
         }
 
         //判断是否登录过
-        if($token=Tools::getCache('access_token_'.date('Y-m-d'))){
+        if ($token = Tools::getCache('access_token_' . date('Y-m-d'))) {
             $this->_access_token = $token;
         }
     }
@@ -155,22 +153,24 @@ class IBaseAuth
      * @param $config
      * @return null|IBaseAuth
      */
-    static public function  getInstance($config){
+    static public function getInstance($config)
+    {
         if (!self::$instance instanceof self) {
             self::$instance = new self($config);
         }
         return self::$instance;
     }
+
     /**
      * 生成签名的字符串
      * @return string   获取签名的内容
      */
     public function getSign()
     {
-       //获取已缓存的http请求的签名
-        $this->_sign =Tools::getCache('http_sign_'.date('Y-m-d'));
+        //获取已缓存的http请求的签名
+        $this->_sign = Tools::getCache('http_sign_' . $this->_tplusconfig['orgid'] . '_' . date('Y-m-d'));
         //如果token无效或签名无效 或
-        if(empty($this->_sign)){
+        if (empty($this->_sign)) {
 
             $appdata = [
                 'appkey' => $this->_tplusconfig['appKey'],
@@ -190,7 +190,7 @@ class IBaseAuth
             $auth = ['appKey' => $this->_tplusconfig['appKey'], 'authInfo' => $sign, 'orgId' => $this->_tplusconfig['orgid']];
             $this->_sign = base64_encode(json_encode($auth));
             if (!empty($this->_access_token)) {
-                Tools::setCache('http_sign_' . date('Y-m-d'), $this->_sign, $this->_token_timeout);
+                Tools::setCache('http_sign_' . $this->_tplusconfig['orgid'] . '_' . date('Y-m-d'), $this->_sign, $this->_token_timeout);
             }
         }
         // 设置请求的头部信息
@@ -208,10 +208,10 @@ class IBaseAuth
      * @param $fullurl bool true  完整的url false 整合与serverurl进行整合
      * @return bool|string
      */
-    public function httpPost($url, $data,$fullurl=false)
+    public function httpPost($url, $data, $fullurl = false)
     {
-        if(!$fullurl){
-            $url=$this->geturl($url);
+        if (!$fullurl) {
+            $url = $this->geturl($url);
         }
         // 获取登录的签名
         $this->getSign();
@@ -225,10 +225,10 @@ class IBaseAuth
      * @param $fullurl bool true  完整的url false 整合与serverurl进行整合
      * @return bool|string
      */
-    public function httpGet($url, $data,$fullurl=false)
+    public function httpGet($url, $data, $fullurl = false)
     {
-        if(!$fullurl){
-            $url=$this->geturl($url);
+        if (!$fullurl) {
+            $url = $this->geturl($url);
         }
         $this->getSign();
         return $this->httpDone(Tools::get($url, $data, ['headers' => $this->_header]));
@@ -242,8 +242,8 @@ class IBaseAuth
      */
     protected function httpDone($data)
     {
-        if ($data != false){
-            return json_decode($data,true);
+        if ($data != false) {
+            return json_decode($data, true);
         }
         return false;
     }
@@ -258,25 +258,26 @@ class IBaseAuth
      * @return bool     返回登录成功后的数据
      * @throws \Exception 用户名和org同时为空时
      */
-    public function login($username='',$passwd='',$accNum=''){
-        if (empty($username) && empty($this->_tplusconfig['orgid'])){
+    public function login($username = '', $passwd = '', $accNum = '')
+    {
+        if (empty($username) && empty($this->_tplusconfig['orgid'])) {
             throw  new \Exception("no specified Username Or orgid");
         }
-        $postdata=[];
-        if (!empty($username)){
+        $postdata = [];
+        if (!empty($username)) {
             $postdata = ['userName' => $username, 'password' => $passwd, 'accNum' => $accNum];
-            $url= $this->_tplusconfig['serverUrl'].self::USERNAME_URL;
-        }else{
-            $url= $this->_tplusconfig['serverUrl'].self::ORGID_URL;
+            $url = $this->_tplusconfig['serverUrl'] . self::USERNAME_URL;
+        } else {
+            $url = $this->_tplusconfig['serverUrl'] . self::ORGID_URL;
         }
 
         //进行登录操作
-        $jsondata =  $this->httpPost($url,["_args" => json_encode($postdata)]);
+        $jsondata = $this->httpPost($url, ["_args" => json_encode($postdata)]);
         //检查是否登录成功
-        if($jsondata!==false){
-            Tools::setCache('access_token_'.date('Y-m-d'),$jsondata['access_token'],$this->_token_timeout);
+        if ($jsondata !== false) {
+            Tools::setCache('access_token_' . $this->_tplusconfig['orgid'] . '_' . date('Y-m-d'), $jsondata['access_token'], $this->_token_timeout);
             $this->_access_token = $jsondata['access_token'];
-            Tools::delCache('http_sign_'.date('Y-m-d'));
+            Tools::delCache('http_sign_' . $this->_tplusconfig['orgid'] . '_' . date('Y-m-d'));
         }
         return $jsondata;
     }
@@ -285,30 +286,32 @@ class IBaseAuth
      * 判断用户是否登录
      * @return bool  true 已登录  false 未登录
      */
-    public function checkLogin(){
-        return empty($this->_access_token)?false:true;
+    public function checkLogin()
+    {
+        return empty($this->_access_token) ? false : true;
     }
 
     /**
      * 自动检测是否登录,未登录时进行登录
-     * @param string $username      用户名
-     * @param string $passwd        密码
-     * @param string $accNum        帐套号
+     * @param string $username 用户名
+     * @param string $passwd 密码
+     * @param string $accNum 帐套号
      * @param $force bool           强制重新登录,true 强制  false  不强制
      * @return bool 成功返回true,失败返回false
      */
-    public function autologin($username='',$passwd='',$accNum='',$force=false){
-        if(is_bool($username)){
-            $force=$username;
-            $username='';
+    public function autologin($username = '', $passwd = '', $accNum = '', $force = false)
+    {
+        if (is_bool($username)) {
+            $force = $username;
+            $username = '';
         }
 
-        if($force){
-            $this->_access_token='';
-            Tools::delCache('access_token_'.date('Y-m-d'));
-            Tools::delCache('http_sign_'.date('Y-m-d'));
+        if ($force) {
+            $this->_access_token = '';
+            Tools::delCache('access_token_' . date('Y-m-d'));
+            Tools::delCache('http_sign_' . date('Y-m-d'));
         }
-        if(empty($this->_access_token)){
+        if (empty($this->_access_token)) {
             try {
 
                 return $this->login($username, $passwd, $accNum);
@@ -325,17 +328,18 @@ class IBaseAuth
      * @param string $url
      * @return bool|string
      */
-    public function geturl($url=''){
-        if(stripos($url,$this->_tplusconfig['serverUrl'])!==false){
+    public function geturl($url = '')
+    {
+        if (stripos($url, $this->_tplusconfig['serverUrl']) !== false) {
             return $url;
         }
-        if(!empty($url)){
-           $f=substr($url,0,1);
-           if($f=='/' || $f=='\\'){
-               $url=substr($url,1);
-           }
+        if (!empty($url)) {
+            $f = substr($url, 0, 1);
+            if ($f == '/' || $f == '\\') {
+                $url = substr($url, 1);
+            }
         }
-        return $this->_tplusconfig['serverUrl'].$url;
+        return $this->_tplusconfig['serverUrl'] . $url;
     }
 
     /**
@@ -343,7 +347,8 @@ class IBaseAuth
      * @param $name
      * @return bool/value  成功返回内容 失败返回false
      */
-    public function __get($name){
+    public function __get($name)
+    {
         if (isset($this->$name)) {                               //判断变量是否被声明
             return $this->$name;
         }
@@ -356,8 +361,9 @@ class IBaseAuth
      * @param $name   变量名称
      * @param $value   变量值
      */
-    public function __set($name, $value){
-        $this->$name=$value;
+    public function __set($name, $value)
+    {
+        $this->$name = $value;
     }
 
 }

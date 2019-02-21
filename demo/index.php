@@ -22,7 +22,36 @@ $config = include 'config.demo.php';
 //获取认证的信息
 //$ibaseauth = IBaseAuth::getInstance($config);
 
-$ibaseauth = tplus_baseAuth($config);
+$orgids = [
+    ['orgid' => '90011661615', 'auth' => null],
+    ['orgid' => '90012581281', 'auth' => null],
+];
+//'orgid' => '90011661615',
+//'orgid' => '90012581281',
+
+
+foreach ($orgids as $k => $v) {
+    $config['api']['orgid'] = $v['orgid'];
+    $ibaseauth = tplus_baseAuth($config);
+    if ($ibaseauth->autologin()) {
+        $orgids[$k]['auth'] = $ibaseauth;
+    }
+
+    tplus_dump($ibaseauth);
+    $sale = tplus_load('saleDelivery', $ibaseauth);
+    $query = [
+        [
+            'WhereName' => 'SaleDelivery.ExternalVoucherCode',
+            'BeginValue' => 'zy_20181121084959405473600',
+        ]
+    ];
+    $data = $sale->query($query, 'queryParam');
+    tplus_dump($data);
+}
+//var_dump($orgids);
+
+exit;
+
 
 // 进行自动登录
 if ($ibaseauth->autologin()) {

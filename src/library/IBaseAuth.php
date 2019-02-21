@@ -275,7 +275,7 @@ class IBaseAuth
         //进行登录操作
         $jsondata = $this->httpPost($url, ["_args" => json_encode($postdata)]);
         //检查是否登录成功
-        if ($jsondata !== false) {
+        if ($jsondata !== false && isset($jsondata['access_token'])) {
             Tools::setCache('access_token_' . $this->_tplusconfig['orgid'] . '_' . date('Y-m-d'), $jsondata['access_token'], $this->_token_timeout);
             $this->_access_token = $jsondata['access_token'];
             Tools::delCache('http_sign_' . $this->_tplusconfig['orgid'] . '_' . date('Y-m-d'));

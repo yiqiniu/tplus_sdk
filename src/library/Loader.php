@@ -47,9 +47,9 @@ class Loader
      * @return mixed
      * @throws \Exception
      */
-    public static function model($name = '', $baseauth)
+    public static function model($name, $baseauth)
     {
-        $uid = $name;
+        $uid = md5(serialize($baseauth));
         if (isset(self::$instance[$uid])) {
             return self::$instance[$uid];
         }

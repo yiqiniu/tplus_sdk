@@ -37,16 +37,10 @@ foreach ($orgids as $k => $v) {
         $orgids[$k]['auth'] = $ibaseauth;
     }
 
-    tplus_dump($ibaseauth);
     $sale = tplus_load('saleDelivery', $ibaseauth);
-    $query = [
-        [
-            'WhereName' => 'SaleDelivery.ExternalVoucherCode',
-            'BeginValue' => 'zy_20181121084959405473600',
-        ]
-    ];
-    $data = $sale->query($query, 'queryParam');
-    tplus_dump($data);
+
+
+    tplus_dump($sale);
 }
 //var_dump($orgids);
 

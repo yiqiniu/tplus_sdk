@@ -14,21 +14,10 @@ include "autoload.php";
 $config = include 'config.demo.php';
 
 
-//$ret =tplus_pingyin();
-//$sss= $ret->str2py("北京一起牛技术部胖子",false,' ');
-//tplus_dump($sss);
-
-
-//获取认证的信息
-//$ibaseauth = IBaseAuth::getInstance($config);
-
 $orgids = [
     ['orgid' => '90011661615', 'auth' => null],
     ['orgid' => '90012581281', 'auth' => null],
 ];
-//'orgid' => '90011661615',
-//'orgid' => '90012581281',
-
 
 foreach ($orgids as $k => $v) {
     $config['api']['orgid'] = $v['orgid'];

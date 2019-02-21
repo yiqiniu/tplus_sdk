@@ -19,21 +19,26 @@ class Loader
     protected static $namespace = 'yqn\\tplus';
 
     // 基础认证类
-    protected static $baseauth=null;
+    protected static $baseauth = null;
 
     // 接口配置的信息
-    public static $config=null;
+    public static $config = null;
 
 
     /**
      * 加载基础认证的类
      * @param null $config
      */
-    public static function baseAuth($config=null){
-        if($config!==null){
-            self::$config=$config;
-        }
-        return self::$baseauth = IBaseAuth::getInstance(self::$config);
+    public static function baseAuth($config)
+    {
+        return IBaseAuth::getInstance($config);
+
+        /*if ($config !== null) {
+            return  IBaseAuth::getInstance($config);
+        }else{
+            return self::$baseauth = IBaseAuth::getInstance(self::$config);
+        }*/
+
     }
 
     /**
@@ -42,29 +47,29 @@ class Loader
      * @return mixed
      * @throws \Exception
      */
-    public static function model($name = '',$baseauth=null)
+    public static function model($name = '', $baseauth)
     {
-        $uid = $name ;
+        $uid = $name;
         if (isset(self::$instance[$uid])) {
             return self::$instance[$uid];
         }
 
         //判断是否指定认证基类
 
-        if(!empty($baseauth)){
-            self::$baseauth=$baseauth;
-        }
-        if (empty(self::$baseauth)){
-            if(empty(self::$config)) {
-                throw new \Exception('Please first call baseAuth function ');
-            }
-            self::$baseauth=IBaseAuth::getInstance(self::$config);
-        }
+        /*if(empty($baseauth)){
+            //self::$baseauth=$baseauth;
+        }*/
+        /* if (empty($baseauth)) {
+             if (empty(self::$config)) {
+                 throw new \Exception('Please first call baseAuth function ');
+             }
+             $baseauth = IBaseAuth::getInstance(self::$config);
+         }*/
         //解析类名
         $class = self::parseClass($name);
 
         if (class_exists($class)) {
-            $model = new $class(self::$baseauth);
+            $model = new $class($baseauth);
         } else {
             throw new \Exception('class not exists' . $class);
         }
@@ -79,6 +84,6 @@ class Loader
      */
     public static function parseClass($name)
     {
-         return '\\'.self::$namespace . '\\I' .ucfirst($name);
-     }
+        return '\\' . self::$namespace . '\\I' . ucfirst($name);
+    }
 }

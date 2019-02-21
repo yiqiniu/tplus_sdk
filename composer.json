@@ -2,7 +2,7 @@
   "name": "yqn/tplus_sdk",
   "description": "yiqiniu tplus client sdk",
   "type": "library",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "authors": [
     {
       "name": "gjianbo",

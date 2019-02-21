@@ -25,7 +25,8 @@ function tplus_config($config){
  * @param $config array  配置参数
  * @return object        返回基础认证的对象
  */
-function tplus_baseAuth($config=null){
+function tplus_baseAuth($config)
+{
     return tplusLoader::baseAuth($config);
 }
 
@@ -35,7 +36,8 @@ function tplus_baseAuth($config=null){
  * @param $baseauth     object  基础认证的类
  * @return object       返回要获取的类
  */
-function tplus_load($name,$baseauth=null){
+function tplus_load($name, $baseauth)
+{
     try{
         return tplusLoader::model($name,$baseauth);
     }

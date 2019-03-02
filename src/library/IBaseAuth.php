@@ -31,7 +31,7 @@ class IBaseAuth
     //header
     protected $_header = null;
     //缓存有效期
-    private $_token_timeout = 3600 * 5;
+    private $_token_timeout = 3600 * 12;
 
     //已生成有签名
     private $_sign = '';
@@ -142,7 +142,7 @@ class IBaseAuth
         }
 
         //判断是否登录过
-        if ($token = Tools::getCache('access_token_' . date('Y-m-d'))) {
+        if ($token = Tools::getCache('access_token_' . $this->_tplusconfig['orgid'] . '_' . date('Y-m-d'))) {
             $this->_access_token = $token;
         }
     }
@@ -309,14 +309,15 @@ class IBaseAuth
 
         if ($force) {
             $this->_access_token = '';
-            Tools::delCache('access_token_' . date('Y-m-d'));
-            Tools::delCache('http_sign_' . date('Y-m-d'));
+            Tools::delCache('access_token_' . $this->_tplusconfig['orgid'] . '_' . date('Y-m-d'));
+            Tools::delCache('http_sign_' . $this->_tplusconfig['orgid'] . '_' . date('Y-m-d'));
         }
         if (empty($this->_access_token)) {
             try {
 
                 return $this->login($username, $passwd, $accNum);
             } catch (\Exception $e) {
+
                 print_r($e);
                 return false;
             }

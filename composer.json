@@ -3,6 +3,7 @@
   "description": "yiqiniu tplus client sdk",
   "type": "library",
   "version": "1.1.5",
+  "license": "MIT",
   "authors": [
     {
       "name": "gjianbo",

@@ -11,7 +11,7 @@ use yqn\helper\Tools;
 include "autoload.php";
 
 // 加载配置文件
-$config = include 'config.demo.php';
+$config = include 'config.php';
 
 
 $orgids = [

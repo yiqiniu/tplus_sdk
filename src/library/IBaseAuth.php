@@ -11,6 +11,7 @@ namespace yqn\tplus;
 
 use Firebase\JWT\JWT;
 use InvalidArgumentException;
+use yqn\helper\Http;
 use yqn\helper\Tools;
 
 
@@ -209,14 +210,20 @@ class IBaseAuth
      * @param $fullurl bool true  完整的url false 整合与serverurl进行整合
      * @return bool|string
      */
-    public function httpPost($url, $data, $fullurl = false)
+    public function httpPost($url, $data, $fullurl = false, $headers = [])
     {
         if (!$fullurl) {
             $url = $this->geturl($url);
         }
         // 获取登录的签名
         $this->getSign();
-        return $this->httpDone(Tools::post($url, $data, ['headers' => $this->_header]));
+        $opt_header = ['headers' => $this->_header];
+        foreach ($headers as $k => $v) {
+            if (!isset($opt_header[$k])) {
+                $opt_header[$k] = $v;
+            }
+        }
+        return $this->httpDone(Http::post($url, $data, $opt_header));
     }
 
     /**
@@ -226,13 +233,19 @@ class IBaseAuth
      * @param $fullurl bool true  完整的url false 整合与serverurl进行整合
      * @return bool|string
      */
-    public function httpGet($url, $data, $fullurl = false)
+    public function httpGet($url, $data, $fullurl = false, $headers = [])
     {
         if (!$fullurl) {
             $url = $this->geturl($url);
         }
         $this->getSign();
-        return $this->httpDone(Tools::get($url, $data, ['headers' => $this->_header]));
+        $opt_header = ['headers' => $this->_header];
+        foreach ($headers as $k => $v) {
+            if (!isset($opt_header[$k])) {
+                $opt_header[$k] = $v;
+            }
+        }
+        return $this->httpDone(Http::get($url, $data, $opt_header));
     }
 
 

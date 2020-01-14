@@ -68,14 +68,3 @@ function tplus_dump($var, $echo = true, $label = null)
 {
     return tplusDebug::dump($var, $echo, $label);
 }
-
-/**
- * 返回Pying转换类
- * @param string $charset
- * @return null|\yqn\helper\Pingyin
- */
-function tplus_pingyin()
-{
-    return \yqn\helper\Pingyin::getInstance();
-}
-

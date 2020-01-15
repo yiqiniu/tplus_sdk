@@ -150,7 +150,9 @@ abstract class IBaseSdk
     public function __call($name, $arguments)
     {
         list($type, $name) = explode('_', $name);
-
+        if ($this->opName == '') {
+            $this->opName = lcfirst($this->clsName);
+        }
         if (!in_array($type, array('post', 'get')) || !isset($this->_opAction[$name]) || $name == '' || $this->opName == '') {
             $this->errorlog($name, $arguments, ['msg' => '访问时验证失败',
                 '$this->opName' => $this->opName,

@@ -71,6 +71,8 @@ abstract class IBaseSdk
         //规则: 类名的第一位,必须是大写'I'开头,操作名=除第1位外首字母小写的其他字符
         if (substr($this->clsName, 0, 1) == 'I') {
             $this->opName = lcfirst(substr($this->clsName, 1));
+        } else {
+            $this->opName = lcfirst($this->clsName);
         }
 
         //生成日志的文件名
@@ -150,9 +152,6 @@ abstract class IBaseSdk
     public function __call($name, $arguments)
     {
         list($type, $name) = explode('_', $name);
-        if ($this->opName == '') {
-            $this->opName = lcfirst($this->clsName);
-        }
         if (!in_array($type, array('post', 'get')) || !isset($this->_opAction[$name]) || $name == '' || $this->opName == '') {
             $this->errorlog($name, $arguments, ['msg' => '访问时验证失败',
                 '$this->opName' => $this->opName,

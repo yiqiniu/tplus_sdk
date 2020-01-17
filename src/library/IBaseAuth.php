@@ -277,9 +277,11 @@ class IBaseAuth
         if (empty($username) && empty($this->_tplusconfig['orgid'])) {
             throw  new \Exception("no specified Username Or orgid");
         }
-        $postdata = [];
+        if (empty($username)) {
+            $accNum = $this->_tplusconfig['orgid'];
+        }
+        $postdata = ['userName' => $username, 'password' => $passwd, 'accNum' => $accNum];
         if (!empty($username)) {
-            $postdata = ['userName' => $username, 'password' => $passwd, 'accNum' => $accNum];
             $url = $this->_tplusconfig['serverUrl'] . self::USERNAME_URL;
         } else {
             $url = $this->_tplusconfig['serverUrl'] . self::ORGID_URL;

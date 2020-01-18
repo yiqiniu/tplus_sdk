@@ -176,20 +176,30 @@ class IBaseAuth
 
             $appdata = [
                 'appkey' => $this->_tplusconfig['appKey'],
-                'orgid' => $this->_tplusconfig['orgid'],
+                'orgid' => $this->login_type ? $this->_tplusconfig['orgid'] : '',
                 'appsecret' => $this->_tplusconfig['appSecret']
             ];
-            $md5key = md5(json_encode($appdata));
-            $signData = [];
-            if (!empty($this->_access_token)) {
-                $signData['access_token'] = $this->_access_token;
+            $expiryTime = time() + $this->_token_timeout;
+            if (empty($this->_access_token)) {
+                $signData = [
+                    'sub' => 'cjt',
+                    'exp' => $expiryTime,
+                    'datas' => $md5key = md5(json_encode($appdata))
+                ];
+            } else {
+                $signData = [
+                    'sub' => 'chanjet',
+                    'exp' => $expiryTime,
+                    'access_token' => $this->_access_token,
+                    'datas' => $md5key = md5(json_encode($appdata))
+                ];
             }
-            $signData['sub'] = 'e-commerce';
-            $signData['datas'] = $md5key;
-            $signData['exp'] = time() + $this->_token_timeout;
-            $sign = JWT::encode($signData, $this->_privekey, 'RS256');
 
-            $auth = ['appKey' => $this->_tplusconfig['appKey'], 'authInfo' => $sign, 'orgId' => $this->_tplusconfig['orgid']];
+            $auth = [
+                'appKey' => $this->_tplusconfig['appKey'],
+                'authInfo' => JWT::encode($signData, $this->_privekey, 'RS256'),
+                'orgId' => $this->login_type ? $this->_tplusconfig['orgid'] : '',
+            ];
             $this->_sign = base64_encode(json_encode($auth));
             if (!empty($this->_access_token)) {
                 Tools::setCache('http_sign_' . $this->_tplusconfig['orgid'] . '_' . date('Y-m-d'), $this->_sign, $this->_token_timeout);
@@ -290,7 +300,8 @@ class IBaseAuth
         if ($jsondata !== false && isset($jsondata['access_token'])) {
             Tools::setCache('access_token_' . $this->_tplusconfig['orgid'] . '_' . date('Y-m-d'), $jsondata['access_token'], $this->_token_timeout);
             $this->_access_token = $jsondata['access_token'];
-            Tools::delCache('http_sign_' . $this->_tplusconfig['orgid'] . '_' . date('Y-m-d'));
+            Tools::delCache('http_sign_' . $this->_tplusconfig['orgid'] . '_' . date('Y-m-d', strtotime('-1 day')));
+            Tools::delCache('access_token_' . $this->_tplusconfig['orgid'] . '_' . date('Y-m-d', strtotime('-1 day')));
         }
         return $jsondata;
     }

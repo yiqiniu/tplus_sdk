@@ -287,15 +287,19 @@ class IBaseAuth
         if (empty($username) && empty($this->_tplusconfig['orgid'])) {
             throw  new \Exception("no specified Username Or orgid");
         }
-        $postdata = ['userName' => $username, 'password' => $passwd, 'accNum' => $accNum];
-        if (!empty($username)) {
-            $url = $this->_tplusconfig['serverUrl'] . self::USERNAME_URL;
+        
+         $postdata = [];
+         if (!empty($username)) {
+             $data = ['userName' => $username, 'password' => $passwd, 'accNum' => $accNum];
+             $postdata= ["_args" => json_encode($data)];
+             $url = $this->_tplusconfig['serverUrl'] . self::USERNAME_URL;
         } else {
+            $this->login_type= true;
             $url = $this->_tplusconfig['serverUrl'] . self::ORGID_URL;
         }
 
         //进行登录操作
-        $jsondata = $this->httpPost($url, ["_args" => json_encode($postdata)]);
+        $jsondata = $this->httpPost($url, $postdata);
         //检查是否登录成功
         if ($jsondata !== false && isset($jsondata['access_token'])) {
             Tools::setCache('access_token_' . $this->_tplusconfig['orgid'] . '_' . date('Y-m-d'), $jsondata['access_token'], $this->_token_timeout);

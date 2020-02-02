@@ -277,7 +277,7 @@ class Tools
      */
     public static function post($url, $data = [], $options = [])
     {
-        return Http::post( $url,$query,$options);
+        return Http::post( $url,$data,$options);
     }
 
     /**

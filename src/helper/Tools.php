@@ -255,6 +255,31 @@ class Tools
         return self::$cache_path . $name;
     }
 
+     /**
+     * 以get访问模拟访问
+     * @param string $url 访问URL
+     * @param array $query GET数
+     * @param array $options
+     * @return bool|string
+     */
+    public static function get($url, $query = [], $options = [])
+    {
+
+        return Http::get( $url,$query,$options);
+    }
+
+    /**
+     * 以post访问模拟访问
+     * @param string $url 访问URL
+     * @param array $data POST数据
+     * @param array $options
+     * @return bool|string
+     */
+    public static function post($url, $data = [], $options = [])
+    {
+        return Http::post( $url,$query,$options);
+    }
+
     /**
      * 把内容写入到日志中
      * @param $filename string 要写入文件名

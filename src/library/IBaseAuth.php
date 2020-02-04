@@ -145,6 +145,8 @@ class IBaseAuth
         //判断是否登录过
         if ($token = Tools::getCache('access_token_' . $this->_tplusconfig['orgid'] . '_' . date('Y-m-d'))) {
             $this->_access_token = $token;
+        } else {
+            Tools::delCache('http_sign_' . $this->_tplusconfig['orgid'] . '_' . date('Y-m-d'));
         }
     }
 
@@ -287,7 +289,7 @@ class IBaseAuth
         if (empty($username) && empty($this->_tplusconfig['orgid'])) {
             throw  new \Exception("no specified Username Or orgid");
         }
-        
+
          $postdata = [];
          if (!empty($username)) {
              $data = ['userName' => $username, 'password' => $passwd, 'accNum' => $accNum];
@@ -304,6 +306,7 @@ class IBaseAuth
         if ($jsondata !== false && isset($jsondata['access_token'])) {
             Tools::setCache('access_token_' . $this->_tplusconfig['orgid'] . '_' . date('Y-m-d'), $jsondata['access_token'], $this->_token_timeout);
             $this->_access_token = $jsondata['access_token'];
+            Tools::delCache('http_sign_' . $this->_tplusconfig['orgid'] . '_' . date('Y-m-d'));
             Tools::delCache('http_sign_' . $this->_tplusconfig['orgid'] . '_' . date('Y-m-d', strtotime('-1 day')));
             Tools::delCache('access_token_' . $this->_tplusconfig['orgid'] . '_' . date('Y-m-d', strtotime('-1 day')));
         }

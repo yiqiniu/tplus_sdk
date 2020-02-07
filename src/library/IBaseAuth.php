@@ -269,7 +269,12 @@ class IBaseAuth
     protected function httpDone($data)
     {
         if ($data != false) {
-            return json_decode($data, true);
+            $jsondata = json_decode($data, true);
+            if (isset($jsondata['message']) && strpos($jsondata['message'], '令牌信息不正确') !== false) {
+                Tools::delCache('access_token_' . $this->_tplusconfig['orgid'] . '_' . date('Y-m-d'));
+                Tools::delCache('http_sign_' . $this->_tplusconfig['orgid'] . '_' . date('Y-m-d'));
+            }
+            return $jsondata;
         }
         return false;
     }
@@ -290,13 +295,13 @@ class IBaseAuth
             throw  new \Exception("no specified Username Or orgid");
         }
 
-         $postdata = [];
-         if (!empty($username)) {
-             $data = ['userName' => $username, 'password' => $passwd, 'accNum' => $accNum];
-             $postdata= ["_args" => json_encode($data)];
-             $url = $this->_tplusconfig['serverUrl'] . self::USERNAME_URL;
+        $postdata = [];
+        if (!empty($username)) {
+            $data = ['userName' => $username, 'password' => $passwd, 'accNum' => $accNum];
+            $postdata = ["_args" => json_encode($data)];
+            $url = $this->_tplusconfig['serverUrl'] . self::USERNAME_URL;
         } else {
-            $this->login_type= true;
+            $this->login_type = true;
             $url = $this->_tplusconfig['serverUrl'] . self::ORGID_URL;
         }
 

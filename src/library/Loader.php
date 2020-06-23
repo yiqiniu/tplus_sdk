@@ -43,7 +43,7 @@ class Loader
 
     /**
      * @param string $name
-     * @param null $baseauth
+     * @param null   $baseauth
      * @return mixed
      * @throws \Exception
      */
@@ -84,6 +84,11 @@ class Loader
      */
     public static function parseClass($name)
     {
-        return '\\' . self::$namespace . '\\I' . ucfirst($name);
+        if (false !== strpos($name, '\\')) {
+            $class = $name;
+        } else {
+            $class = '\\' . self::$namespace . '\\I' . ucfirst($name);
+        }
+        return $class;
     }
 }
